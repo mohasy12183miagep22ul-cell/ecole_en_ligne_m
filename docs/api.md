@@ -14,6 +14,7 @@ Côté application, chaque point d'accès a sa fonction typée dans [`src/api/`]
 | `auth.ts` | connexion, second facteur, déconnexion, profil, mot de passe |
 | `enseignant.ts` | affectations, évaluations, grille de notes, appréciations |
 | `direction.ts` | validation des évaluations, suivi, dérogations, inscriptions |
+| `admin.ts` | tableau de bord, paramétrage, comptes, journal, documents (lecture seule) |
 | `portail.ts` | enfants rattachés et dossier (famille) |
 | `types.ts` | tous les types de requêtes et de réponses |
 
@@ -74,12 +75,13 @@ priorité :
 
 | Espace | Rôles | Préfixe |
 | --- | --- | --- |
+| `admin` | administrateur | `/api/v1/admin` |
 | `direction` | direction | `/api/v1/direction` |
 | `enseignant` | enseignant, professeur principal | `/api/v1/enseignant` |
 | `portail` | tuteur | `/api/v1/portail` |
 
 Un compte peut cumuler plusieurs rôles, donc plusieurs espaces. Un compte sans espace mobile
-(administrateur, secrétariat seuls) se connecte mais doit être renvoyé vers le web. Le compte
+(secrétariat seul) se connecte mais doit être renvoyé vers le web. Le compte
 `eleve` n'a pas encore d'espace mobile : aucun lien n'existe en base entre un compte élève et sa
 fiche.
 
@@ -413,7 +415,199 @@ la capacité : `forcer: true` et `motifDepassement`.
 
 ---
 
-## 5. Portail famille (`/portail`)
+## 5. Espace administrateur (`/admin`)
+
+Rôle : administrateur. **Consultation seule.** L'administrateur voit son paramétrage, ses comptes
+et le journal depuis son téléphone, mais ne modifie rien. Ouvrir ou clôturer une année (RG1, RG2),
+modifier les coefficients (RG3), créer une classe ou une affectation, créer un compte, changer ses
+rôles ou l'activer restent sur le web. Ces opérations n'ont aucune route API : un `POST`, `PUT` ou
+`DELETE` sous `/admin` répond `404 E_ROUTE_INTROUVABLE`.
+
+Côté application : aucun bouton de modification dans cet espace. Quand l'écran web correspondant
+existe, un lien « Modifier sur le web » suffit.
+
+Le compte administrateur passe par le second facteur à la connexion, comme la direction.
+
+### `GET /admin/accueil` — `tableauDeBordAdmin()`
+
+Écran d'accueil : compteurs, années et périodes de l'année active.
+
+```json
+{
+  "statistiques": { "niveaux": 7, "matieres": 12, "comptesActifs": 64, "classes": 18 },
+  "annees": [{ "id": 3, "libelle": "2026-2027", "etat": "active", "decoupage": "trimestres", "classes": 18 }],
+  "periodes": [{
+    "id": 7, "libelle": "1er trimestre", "ordre": 1,
+    "debutSaisie": "2026-10-01", "finSaisie": "2026-12-20", "etatSaisie": "ouverte"
+  }]
+}
+```
+
+- `statistiques.classes` compte les classes de l'année active (0 sans année active).
+- `annees` va de la plus récente à la plus ancienne. `etat` vaut `preparation`, `active` ou
+  `cloturee`, et `decoupage` vaut `trimestres` ou `semestres`.
+- `periodes` est vide sans année active. `etatSaisie` vaut `ouverte`, `a_venir` ou `close`.
+  C'est la fenêtre de saisie normale, sans les dérogations accordées par la direction.
+
+### `GET /admin/annees` — `anneesAdmin()`
+
+```json
+{ "annees": [{
+  "id": 3, "libelle": "2026-2027", "etat": "active", "decoupage": "trimestres",
+  "dateDebut": "2026-09-01", "dateFin": "2027-06-30", "classes": 18,
+  "periodes": [{ "id": 7, "libelle": "1er trimestre", "ordre": 1, "debutSaisie": "…", "finSaisie": "…", "etatSaisie": "ouverte" }]
+}] }
+```
+
+Une année `cloturee` est en lecture seule définitive (RG2). L'application peut l'indiquer, mais elle
+ne propose de toute façon aucune modification.
+
+### `GET /admin/structure` — `structureAdmin()`
+
+```json
+{
+  "niveaux": [{ "id": 4, "code": "3E", "libelle": "3e", "ordre": 4, "cycle": "college" }],
+  "matieres": [{ "id": 2, "code": "MA", "libelle": "Mathématiques", "famille": "scientifique", "noteMaxDefaut": 20 }],
+  "coefficients": [{ "niveauId": 4, "matiereId": 2, "coefficient": 4, "obligatoire": true }]
+}
+```
+
+- `niveaux` est trié par `ordre` et `matieres` par libellé.
+- `cycle` vaut `primaire`, `college` ou `lycee`. `famille` vaut `litteraire`, `scientifique`,
+  `langue`, `artistique` ou `sportive`.
+- **Le coefficient appartient au couple niveau + matière, jamais à la matière seule (RG3).** Il faut
+  donc l'afficher par niveau, sous forme de tableau niveaux × matières ou d'une liste par niveau,
+  jamais comme un attribut de la matière. Un couple absent de `coefficients` signifie que la
+  matière n'est pas au programme de ce niveau.
+
+### `GET /admin/etablissement` — `etablissementAdmin()`
+
+```json
+{ "etablissement": {
+  "nom": "Groupe scolaire Les Flamboyants", "adresse": "…", "ville": "Conakry", "pays": "Guinée",
+  "telephone": "…", "email": "…", "chefEtablissement": "M. Camara", "titreChef": "Proviseur"
+} }
+```
+
+Tant que les paramètres n'ont jamais été enregistrés, `nom` vaut « Établissement à paramétrer » et
+les champs facultatifs valent `null`.
+
+### `GET /admin/classes?annee=` — `classesAdmin({ annee })`
+
+Sans `annee`, le serveur prend l'année active, ou à défaut la plus récente. Une année inconnue
+renvoie `404`.
+
+```json
+{
+  "annee": { "id": 3, "libelle": "2026-2027", "etat": "active" },
+  "annees": [{ "id": 3, "libelle": "2026-2027", "etat": "active" }],
+  "classes": [{
+    "id": 9, "libelle": "3e A", "niveauId": 4, "niveau": "3e",
+    "capacite": 40, "salle": "B12", "professeurPrincipal": "Ibrahima Sow"
+  }]
+}
+```
+
+`annees` alimente le sélecteur d'année. `salle` et `professeurPrincipal` peuvent valoir `null`. Les
+classes sont triées par niveau puis par libellé.
+
+### `GET /admin/affectations?annee=&classe=` — `affectationsAdmin({ annee, classe })`
+
+Qui enseigne quoi, et dans quelle classe. `annee` fonctionne comme pour les classes, et `classe`
+limite la liste à une classe.
+
+```json
+{
+  "annee": { "id": 3, "libelle": "2026-2027", "etat": "active" },
+  "annees": [ … ],
+  "classes": [{ "id": 9, "libelle": "3e A" }],
+  "affectations": [{
+    "id": 41, "enseignantId": 12, "enseignant": "Ibrahima Sow",
+    "classeId": 9, "classe": "3e A", "matiere": "Mathématiques", "matiereCode": "MA"
+  }]
+}
+```
+
+`classes` alimente le filtre par classe. La liste n'est pas paginée : une année compte au plus
+quelques centaines d'affectations. Filtrez par classe pour garder un écran lisible.
+
+### `GET /admin/comptes?page=&q=` — `comptesAdmin({ page, q })`
+
+Comptes de l'établissement, triés par nom et paginés par 25. `q` cherche dans le nom et l'adresse
+électronique (80 caractères au plus).
+
+```json
+{
+  "comptes": [{
+    "id": 12, "fullName": "Ibrahima Sow", "email": "i.sow@flamboyants.edu.gn",
+    "sousTitre": "Enseignant", "initials": "IS", "actif": true,
+    "roles": ["enseignant", "professeur_principal"],
+    "verrouille": false, "doitChangerMotDePasse": false
+  }],
+  "pagination": { "page": 1, "dernierePage": 3, "total": 64 }
+}
+```
+
+`verrouille` signale un verrouillage temporaire après 5 échecs de connexion.
+`doitChangerMotDePasse` signale un compte qui ne s'est pas encore connecté pour changer son mot de
+passe initial. Ce sont des indicateurs à afficher, pas des actions.
+
+### `GET /admin/journal?page=` — `journal(page)`
+
+Rôles : administrateur **et direction**. Pour la direction, l'entrée vers le journal se place dans
+son propre espace. Le journal (RG22) est en lecture seule, du plus récent au plus ancien, **paginé
+par 50**.
+
+```json
+{
+  "entrees": [{
+    "id": 1542, "action": "evaluation.valider", "entite": "evaluation", "entiteId": "310",
+    "avant": { "etat": "soumise" }, "apres": { "etat": "validee" },
+    "ip": "41.223.x.x", "auteur": "Mariama Camara", "date": "2026-10-28T09:14:03.000+00:00"
+  }],
+  "pagination": { "page": 1, "dernierePage": 31, "total": 1542 }
+}
+```
+
+- `auteur` vaut `"Système"` pour une action sans compte associé (traitement automatique, ou
+  tentative de connexion anonyme).
+- `avant` et `apres` sont des objets libres, ou `null` : affichez-les sous forme de liste clé →
+  valeur, sans les interpréter.
+- `date` est un horodatage ISO 8601 avec son décalage : convertissez-le à l'heure locale
+  (Africa/Conakry) pour l'affichage.
+
+### `GET /documents` — `mesDocuments()`
+
+Rôles : administrateur, direction ou secrétariat. Ce sont les documents que **le compte connecté** a
+demandés sur le web (certificats, listes d'élèves, registre), produits en file d'attente. La liste
+contient les 30 plus récents et n'est pas paginée.
+
+```json
+{ "documents": [{
+  "id": 88, "libelle": "Registre des inscriptions · 2026-2027",
+  "format": "pdf", "etat": "pret", "date": "2026-10-27T16:40:12.000+00:00"
+}] }
+```
+
+`format` vaut `pdf` ou `xlsx`. `etat` vaut `en_attente`, `pret` ou `echec`. Un document en échec se
+redemande sur le web. Ne proposez le téléchargement que pour l'état `pret`.
+
+### `GET /documents/:id` — `telechargerDocument(id)`
+
+**Réponse binaire, pas du JSON** : `Content-Type: application/pdf` ou
+`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, avec
+`Content-Disposition: attachment; filename="…"` et `Cache-Control: private, no-store`.
+
+- `api()` ne convient pas ici. Téléchargez le fichier avec `expo-file-system`, sans oublier
+  l'en-tête `Authorization`, dans le répertoire de cache, puis ouvrez-le avec `expo-sharing`.
+  Supprimez la copie locale après le partage : ce sont des données personnelles d'élèves.
+- Le jeton ne doit jamais passer dans l'URL.
+- Erreurs : `403` si le document a été demandé par un autre compte, `404` s'il n'est pas prêt ou
+  plus disponible dans le stockage.
+
+---
+
+## 6. Portail famille (`/portail`)
 
 Rôle : tuteur. **Lecture seule, limitée aux élèves rattachés au compte (RG20).**
 
@@ -444,7 +638,7 @@ viendront avec ce lot. N'affichez rien qui laisse penser le contraire.
 
 ---
 
-## 6. Récapitulatif des points d'accès
+## 7. Récapitulatif des points d'accès
 
 | Méthode | Chemin (`/api/v1…`) | Fonction | Accès |
 | --- | --- | --- | --- |
@@ -477,10 +671,20 @@ viendront avec ce lot. N'affichez rien qui laisse penser le contraire.
 | GET | `/direction/inscriptions` | `inscriptionsAValider` | direction |
 | POST | `/direction/inscriptions/:id/valider` | `validerInscription` | direction |
 | POST | `/direction/inscriptions/:id/refuser` | `refuserInscription` | direction |
+| GET | `/admin/accueil` | `tableauDeBordAdmin` | admin |
+| GET | `/admin/annees` | `anneesAdmin` | admin |
+| GET | `/admin/structure` | `structureAdmin` | admin |
+| GET | `/admin/etablissement` | `etablissementAdmin` | admin |
+| GET | `/admin/classes` | `classesAdmin` | admin |
+| GET | `/admin/affectations` | `affectationsAdmin` | admin |
+| GET | `/admin/comptes` | `comptesAdmin` | admin |
+| GET | `/admin/journal` | `journal` | admin, direction |
+| GET | `/documents` | `mesDocuments` | admin, direction, secrétariat |
+| GET | `/documents/:id` | `telechargerDocument` (binaire) | admin, direction, secrétariat |
 | GET | `/portail/enfants` | `mesEnfants` | tuteur |
 | GET | `/portail/enfants/:id` | `dossierEnfant` | tuteur |
 
-## 7. Essayer avec curl
+## 8. Essayer avec curl
 
 Les comptes de démonstration viennent du seeder du serveur (`node ace db:seed`), avec le mot de
 passe `MOT_DE_PASSE_DEMO` de `database/seeders/comptes_demo_seeder.ts` : `i.sow@flamboyants.edu.gn`
@@ -516,6 +720,7 @@ complète des points d'accès, des réponses et des erreurs est dans ce projet-l
 | Émission et révocation des jetons | `app/services/jeton_service.ts` |
 | Second facteur sans session (défis) | `app/services/code_verification_service.ts`, table `defis_connexion` |
 | Portail famille (RG20, identifiants opaques) | `app/services/portail_service.ts`, `ElevePolicy.consulterFamille` |
+| Administrateur, lecture seule (`/admin/*`, `/admin/journal`, `/documents`) | `app/controllers/api/admin_controller.ts` |
 | Tests | `tests/functional/api_mobile.spec.ts` |
 
 ## Choix
@@ -533,6 +738,13 @@ complète des points d'accès, des réponses et des erreurs est dans ce projet-l
 - **Portail** : les élèves sont désignés par un identifiant chiffré (`encryption`, but
   `portail_eleve`), jamais par leur identifiant séquentiel. Non rattaché ou identifiant forgé :
   même 404. Aucune note ni aucun bulletin n'est exposé avant le lot des bulletins (RG18).
+- **Administrateur : consultation seule.** `GET /admin/accueil`, `annees`, `structure`,
+  `etablissement`, `classes` et `affectations` (`?annee=`, `?classe=`), `comptes` (`?page=`, `?q=`),
+  `admin/journal` (aussi ouvert à la direction) et `GET /documents` avec téléchargement
+  `GET /documents/:id` (action web réutilisée, auteur seul). Aucune route mutante : clôture et
+  activation d'année, coefficients, classes, affectations, comptes et rôles restent sur le web.
+  Compteurs du tableau de bord et lecture du journal sont passés dans `StructureService.compteurs`
+  et `JournalService.lister`, partagés avec le web.
 - Le code web lit désormais explicitement le garde `web` (`auth.use('web')`), car `ctx.auth.user`
   peut aussi désigner un compte authentifié par jeton.
 
