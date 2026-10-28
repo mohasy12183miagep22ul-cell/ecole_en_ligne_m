@@ -29,6 +29,9 @@ import { connexion, mesAffectations, ApiError } from '@/api';
 
 Fixée par `EXPO_PUBLIC_API_URL` dans `.env` (voir `.env.example`), sans `/api/v1` à la fin.
 
+- **Par défaut : le serveur en ligne, `https://ecoleenligne.vercel.app`** (Vercel, projet
+  `ecole_en_ligne`, redéployé à chaque push sur `main` du dépôt serveur).
+- Pour viser un serveur local, surchargez la variable dans `.env.local` (non versionné) :
 - Simulateur iOS / navigateur : `http://localhost:3333`
 - Téléphone ou émulateur Android : l'adresse IP du poste sur le réseau local, ex.
   `http://192.168.1.20:3333`, et le serveur lancé avec `HOST=0.0.0.0` dans son `.env`.
