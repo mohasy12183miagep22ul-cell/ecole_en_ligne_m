@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+html,body{margin:0;padding:0;background:#F6F5FA;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#1B1726;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#7424E0;text-decoration:none}a:hover{color:#5A16B8;text-decoration:underline}
+input,select,textarea,button{font-family:inherit}
+:root{--acc:#7424E0;--acc-soft:#F3ECFD}
+</style>
+</helmet>
+<div style="{{ rootStyle }}">
+<div style="{{ appStyle }}">
+<sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;overflow-y:auto;background:#FFFFFF;display:flex;justify-content:center">
+<div style="width:100%;max-width:1080px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));align-content:center;min-height:100%">
+<div style="padding:28px 24px 8px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="width:40px;height:40px;border-radius:12px;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px"><i class="fa-solid fa-graduation-cap"></i></div>
+<div style="display:flex;flex-direction:column"><span style="font-weight:800;font-size:18px;letter-spacing:-.01em">École en ligne</span><span style="font-size:12px;color:#5E5A6B">Groupe scolaire Les Flamboyants</span></div>
+</div>
+<div style="background:var(--acc-soft);border-radius:24px;padding:20px;display:flex;justify-content:center"><img src="https://cdn.undraw.co/illustrations/online-learning_tgmv.svg" alt="" style="width:100%;max-width:340px;max-height:220px;object-fit:contain"></div>
+<p style="margin:0;font-size:14px;line-height:1.55;color:#5E5A6B;text-wrap:pretty">Inscriptions, notes et bulletins réunis dans un seul espace — pour l’établissement, les enseignants et les familles.</p>
+</div>
+<div style="padding:12px 24px 36px;display:flex;flex-direction:column;justify-content:center">
+<sc-if value="{{ auth.login }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:18px;max-width:420px;width:100%">
+<div style="display:flex;flex-direction:column;gap:6px"><h1 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em">Connexion</h1><p style="margin:0;font-size:14px;color:#5E5A6B">Accédez à votre espace avec vos identifiants.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:12px;font-weight:600;color:#5E5A6B;text-transform:uppercase;letter-spacing:.06em">Profil de démonstration</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ loginRoles }}" as="r" hint-placeholder-count="5">
+<button onClick="{{ r.pick }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:999px;border:1px solid {{ r.bd }};background:{{ r.bg }};color:{{ r.fg }};font-size:13px;font-weight:600;cursor:pointer"><i class="fa-solid {{ r.icon }}"></i>{{ r.label }}</button>
+</sc-for>
+</div>
+</div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#3B3747">Adresse e-mail</span>
+<input type="email" value="{{ email }}" onChange="{{ onEmail }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;color:#1B1726;outline:none" style-focus="border-color:var(--acc);background:#fff"></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#3B3747">Mot de passe</span>
+<div style="position:relative;display:flex"><input type="{{ pwdType }}" value="{{ pwd }}" onChange="{{ onPwd }}" style="flex:1;height:48px;padding:0 48px 0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;color:#1B1726;outline:none;min-width:0" style-focus="border-color:var(--acc);background:#fff">
+<button type="button" onClick="{{ togglePwd }}" aria-label="Afficher le mot de passe" style="position:absolute;right:4px;top:4px;width:40px;height:40px;border:none;background:transparent;color:#5E5A6B;cursor:pointer;font-size:15px"><i class="fa-regular {{ eyeIcon }}"></i></button></div></label>
+<sc-if value="{{ hasAuthErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:#FCE8EF;color:#A3214F;font-size:13px;font-weight:500"><i class="fa-solid fa-circle-exclamation"></i>{{ authErr }}</div></sc-if>
+<div style="display:flex;justify-content:flex-end"><button onClick="{{ toForgot }}" style="border:none;background:none;color:var(--acc);font-size:13px;font-weight:600;cursor:pointer;padding:4px 0">Mot de passe oublié ?</button></div>
+<button onClick="{{ doLogin }}" style="height:50px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="filter:brightness(.94)">Se connecter<i class="fa-solid fa-arrow-right"></i></button>
+<p style="margin:0;font-size:12px;color:#77738A;display:flex;gap:8px;align-items:center"><i class="fa-solid fa-shield-halved"></i>Session sécurisée · compte verrouillé après 5 échecs</p>
+</div>
+</sc-if>
+<sc-if value="{{ auth.twofa }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:18px;max-width:420px;width:100%">
+<div style="width:52px;height:52px;border-radius:16px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:22px"><i class="fa-solid fa-envelope-open-text"></i></div>
+<div style="display:flex;flex-direction:column;gap:6px"><h1 style="margin:0;font-size:24px;font-weight:800">Vérification en deux étapes</h1><p style="margin:0;font-size:14px;color:#5E5A6B;line-height:1.5">Un code à 6 chiffres a été envoyé à <strong style="color:#1B1726">{{ twofaEmail }}</strong>.</p></div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#3B3747">Code de vérification</span>
+<input inputMode="numeric" value="{{ code }}" onChange="{{ onCode }}" placeholder="000000" style="height:56px;padding:0 16px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:24px;letter-spacing:.4em;font-weight:700;color:#1B1726;outline:none;text-align:center" style-focus="border-color:var(--acc);background:#fff"></label>
+<sc-if value="{{ hasAuthErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:#FCE8EF;color:#A3214F;font-size:13px"><i class="fa-solid fa-circle-exclamation"></i>{{ authErr }}</div></sc-if>
+<button onClick="{{ doCode }}" style="height:50px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:15px;font-weight:700;cursor:pointer">Valider le code</button>
+<button onClick="{{ toLogin }}" style="height:44px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer">Retour</button>
+</div>
+</sc-if>
+<sc-if value="{{ auth.forgot }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:18px;max-width:420px;width:100%">
+<button onClick="{{ toLogin }}" style="align-self:flex-start;border:none;background:none;color:#5E5A6B;font-size:14px;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center;padding:0"><i class="fa-solid fa-arrow-left"></i>Connexion</button>
+<div style="display:flex;flex-direction:column;gap:6px"><h1 style="margin:0;font-size:24px;font-weight:800">Mot de passe oublié</h1><p style="margin:0;font-size:14px;color:#5E5A6B;line-height:1.5">Saisissez l’adresse de votre compte : nous vous enverrons un lien de réinitialisation.</p></div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#3B3747">Adresse e-mail</span>
+<input type="email" value="{{ fEmail }}" onChange="{{ onFEmail }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none" style-focus="border-color:var(--acc);background:#fff"></label>
+<sc-if value="{{ hasAuthErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:#FCE8EF;color:#A3214F;font-size:13px"><i class="fa-solid fa-circle-exclamation"></i>{{ authErr }}</div></sc-if>
+<button onClick="{{ doForgot }}" style="height:50px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:15px;font-weight:700;cursor:pointer">Envoyer le lien</button>
+</div>
+</sc-if>
+<sc-if value="{{ auth.sent }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;max-width:420px;width:100%;align-items:flex-start">
+<img src="https://cdn.undraw.co/illustrations/check-boxes_ewf2.svg" alt="" style="width:180px;height:140px;object-fit:contain">
+<h1 style="margin:0;font-size:24px;font-weight:800">Vérifiez votre messagerie</h1>
+<p style="margin:0;font-size:14px;color:#5E5A6B;line-height:1.55">Si un compte est associé à <strong style="color:#1B1726">{{ fEmail }}</strong>, un lien valable 30 minutes vient d’être envoyé.</p>
+<button onClick="{{ toLogin }}" style="height:48px;padding:0 20px;border-radius:12px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:15px;font-weight:700;cursor:pointer">Retour à la connexion</button>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}">
+<aside style="width:248px;flex-shrink:0;background:#fff;border-right:1px solid #ECEAF2;display:flex;flex-direction:column;padding:20px 14px;gap:22px;height:100%;overflow-y:auto">
+<div style="display:flex;align-items:center;gap:10px;padding:0 6px"><div style="width:36px;height:36px;border-radius:11px;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-graduation-cap"></i></div><span style="font-weight:800;font-size:16px">École en ligne</span></div>
+<span style="font-size:11px;font-weight:700;color:#77738A;text-transform:uppercase;letter-spacing:.08em;padding:0 8px">{{ envLabel }}</span>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+<button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;height:42px;padding:0 12px;border-radius:10px;border:none;background:{{ n.bg }};color:{{ n.fg }};font-size:14px;font-weight:{{ n.fw }};cursor:pointer;text-align:left;box-shadow:inset 3px 0 0 {{ n.bar }}"><i class="fa-solid {{ n.icon }}" style="width:18px;text-align:center"></i>{{ n.label }}</button>
+</sc-for>
+</nav>
+<div style="flex:1"></div>
+<button onClick="{{ logout }}" style="display:flex;align-items:center;gap:12px;height:42px;padding:0 12px;border-radius:10px;border:none;background:transparent;color:#4E4A5C;font-size:14px;cursor:pointer"><i class="fa-solid fa-arrow-right-from-bracket" style="width:18px"></i>Se déconnecter</button>
+</aside>
+</sc-if>
+<div style="flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;height:100%">
+<sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}">
+<header style="height:68px;flex-shrink:0;background:#fff;border-bottom:1px solid #ECEAF2;display:flex;align-items:center;gap:16px;padding:0 28px">
+<div style="display:flex;align-items:center;gap:10px;height:40px;padding:0 14px;border-radius:10px;background:#F6F5FA;width:320px;max-width:40%"><input placeholder="Rechercher un élève, une classe…" style="flex:1;min-width:0;border:none;background:transparent;font-size:13px;outline:none;color:#1B1726"><i class="fa-solid fa-magnifying-glass" style="color:var(--acc)"></i></div>
+<div style="flex:1"></div>
+<button onClick="{{ notify }}" aria-label="Notifications" style="width:40px;height:40px;border-radius:50%;border:1px solid #ECEAF2;background:#fff;color:#3B3747;cursor:pointer"><i class="fa-regular fa-bell"></i></button>
+<button onClick="{{ goProfile }}" style="display:flex;align-items:center;gap:10px;border:none;background:none;cursor:pointer;padding:4px;text-align:left">
+<div style="width:38px;height:38px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">{{ user.init }}</div>
+<div style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:700;color:#1B1726">{{ user.name }}</span><span style="font-size:12px;color:#5E5A6B">{{ user.sub }}</span></div>
+<i class="fa-solid fa-chevron-down" style="color:#5E5A6B;font-size:12px"></i></button>
+</header>
+</sc-if>
+<sc-if value="{{ isMob }}" hint-placeholder-val="{{ true }}">
+<header style="height:60px;flex-shrink:0;background:#fff;border-bottom:1px solid #ECEAF2;display:flex;align-items:center;gap:8px;padding:0 8px 0 12px">
+<sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goBack }}" aria-label="Retour" style="width:44px;height:44px;border:none;background:none;color:#1B1726;cursor:pointer;font-size:17px"><i class="fa-solid fa-arrow-left"></i></button></sc-if>
+<sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><div style="width:34px;height:34px;border-radius:10px;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:4px"><i class="fa-solid fa-graduation-cap"></i></div></sc-if>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</span><span style="font-size:11px;color:#5E5A6B">{{ envLabel }}</span></div>
+<button onClick="{{ goProfile }}" aria-label="Mon profil" style="width:44px;height:44px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="width:34px;height:34px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">{{ user.init }}</span></button>
+</header>
+</sc-if>
+<div id="ee-scroll" style="flex:1;min-height:0;overflow-y:auto">
+<div style="{{ contentStyle }}">
+<sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:22px"><h1 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.01em">{{ title }}</h1><span style="font-size:13px;color:#5E5A6B">{{ crumb }} / <span style="color:#1B1726">{{ title }}</span></span></div>
+</sc-if>
+<sc-if value="{{ scr.p_home }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:8px;overflow-x:auto">
+<sc-for list="{{ children }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.pick }}" style="display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:999px;border:1px solid {{ c.bd }};background:{{ c.bg }};cursor:pointer;flex-shrink:0"><span style="width:32px;height:32px;border-radius:50%;background:{{ c.avBg }};color:{{ c.avFg }};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ c.init }}</span><span style="display:flex;flex-direction:column;text-align:left"><span style="font-size:14px;font-weight:{{ c.fw }};color:#1B1726">{{ c.name }}</span><span style="font-size:11px;color:#5E5A6B">{{ c.cls }}</span></span></button></sc-for>
+</div>
+<div style="background:var(--acc);color:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:14px"><div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">{{ ch.init }}</div><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;font-weight:800">{{ ch.name }}</span><span style="font-size:13px">{{ ch.cls }} · Matricule {{ ch.mat }}</span></div></div>
+<span style="font-size:13px">{{ ch.school }} · Année 2026-2027</span>
+</div>
+<sc-if value="{{ pendingBanner }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:12px;padding:14px;border-radius:14px;background:#EAF0FD;color:#1F3E99;font-size:13px;line-height:1.5"><i class="fa-solid fa-circle-info" style="margin-top:2px"></i><span>Le bulletin du 1er trimestre sera visible ici dès sa publication par l’établissement.</span></div></sc-if>
+<sc-if value="{{ chHasBul }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<span style="font-size:12px;font-weight:700;color:#5E5A6B;text-transform:uppercase;letter-spacing:.06em">Dernier bulletin délivré</span>
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:700">{{ lastBul.label }} · {{ lastBul.year }}</span><span style="font-size:13px;color:#5E5A6B">{{ lastBul.cls }} · publié le {{ lastBul.pub }}</span></div><div style="text-align:right"><span style="font-size:30px;font-weight:800;color:var(--acc)">{{ lastBul.mg }}</span><span style="font-size:13px;color:#5E5A6B"> /20</span></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:6px 10px;border-radius:999px;background:#F1F0F5;font-size:12px;font-weight:600">Rang {{ lastBul.rank }} / {{ lastBul.eff }}</span><span style="padding:6px 10px;border-radius:999px;background:#E2F4EA;color:#14663F;font-size:12px;font-weight:600">{{ lastBul.dec }}</span></div>
+<div style="display:flex;gap:10px"><button onClick="{{ lastBul.open }}" style="flex:1;height:46px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Consulter</button><button onClick="{{ lastBul.pdf }}" style="height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:14px;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center"><i class="fa-solid fa-download"></i>PDF</button></div>
+</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<span style="font-size:12px;font-weight:700;color:#5E5A6B;text-transform:uppercase;letter-spacing:.06em">Évolution de la moyenne générale</span>
+<div style="display:flex;align-items:flex-end;gap:12px;height:150px">
+<sc-for list="{{ evo }}" as="b" hint-placeholder-count="3"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><span style="font-size:12px;font-weight:700">{{ b.v }}</span><div style="width:100%;max-width:44px;height:{{ b.h }};background:{{ b.bg }};border-radius:8px 8px 4px 4px"></div><span style="font-size:11px;color:#5E5A6B;white-space:nowrap">{{ b.label }}</span></div></sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ chNoBul }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center"><img src="https://cdn.undraw.co/illustrations/reading-time_gcvc.svg" alt="" style="width:200px;height:150px;object-fit:contain"><span style="font-size:16px;font-weight:700">Aucun bulletin délivré pour l’instant</span><span style="font-size:13px;color:#5E5A6B;max-width:320px;line-height:1.5">Les résultats de {{ ch.prenom }} apparaîtront après la publication du premier bulletin par l’établissement.</span></div></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ scr.p_notes }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:8px;overflow-x:auto"><sc-for list="{{ children }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.pick }}" style="height:36px;padding:0 14px;border-radius:999px;border:1px solid {{ c.bd }};background:{{ c.bg }};font-size:13px;font-weight:{{ c.fw }};cursor:pointer;flex-shrink:0;color:#1B1726">{{ c.name }}</button></sc-for></div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px"><sc-for list="{{ periods }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;display:flex;gap:6px;align-items:center"><sc-if value="{{ p.lock }}" hint-placeholder-val="{{ false }}"><i class="fa-solid fa-lock" style="font-size:11px"></i></sc-if>{{ p.label }}</button></sc-for></div>
+<sc-if value="{{ notesLocked }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:22px"><i class="fa-solid fa-lock"></i></div><span style="font-size:16px;font-weight:700">Résultats non publiés</span><span style="font-size:13px;color:#5E5A6B;max-width:340px;line-height:1.5">Les notes de cette période deviennent visibles uniquement après la délivrance officielle du bulletin.</span></div></sc-if>
+<sc-if value="{{ notesOpen }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:14px;background:var(--acc-soft)"><span style="font-size:14px;font-weight:600">Moyenne générale</span><span style="font-size:22px;font-weight:800;color:var(--acc)">{{ notesMg }}<span style="font-size:13px;color:#5E5A6B;font-weight:500"> /20</span></span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px">
+<sc-for list="{{ noteSubs }}" as="s" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;border-radius:10px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center"><i class="fa-solid {{ s.icon }}"></i></div><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:700">{{ s.name }}</span><span style="font-size:12px;color:#5E5A6B">Coefficient {{ s.coef }}</span></div><span style="font-size:20px;font-weight:800">{{ s.moy }}</span></div>
+<sc-for list="{{ s.evals }}" as="e" hint-placeholder-count="1"><div style="display:flex;justify-content:space-between;gap:10px;padding-top:8px;border-top:1px solid #F1F0F5;font-size:13px"><span style="color:#3B3747">{{ e.title }} <span style="color:#77738A">· {{ e.date }}</span></span><span style="font-weight:700;white-space:nowrap">{{ e.note }}</span></div></sc-for>
+<sc-if value="{{ s.empty }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#77738A;padding-top:8px;border-top:1px solid #F1F0F5">Aucune note sur la période</span></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ scr.p_bulletins }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:8px;overflow-x:auto"><sc-for list="{{ children }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.pick }}" style="height:36px;padding:0 14px;border-radius:999px;border:1px solid {{ c.bd }};background:{{ c.bg }};font-size:13px;font-weight:{{ c.fw }};cursor:pointer;flex-shrink:0;color:#1B1726">{{ c.name }}</button></sc-for></div>
+<sc-if value="{{ bulPending }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:16px;border:1px dashed #CFCBDA;background:#FBFAFD"><div style="width:42px;height:42px;border-radius:12px;background:#F1F0F5;color:#5E5A6B;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-hourglass-half"></i></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">1er trimestre · 2026-2027</span><span style="font-size:13px;color:#5E5A6B">En attente de publication par l’établissement</span></div></div></sc-if>
+<sc-for list="{{ bulList }}" as="b" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:14px;padding:14px 12px 14px 16px;border-radius:16px;border:1px solid #ECEAF2;background:#fff">
+<button onClick="{{ b.open }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:14px;border:none;background:none;padding:0;cursor:pointer;text-align:left"><div style="width:42px;height:42px;border-radius:12px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-file-lines"></i></div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:#1B1726">{{ b.label }} · {{ b.year }}</span><span style="font-size:12px;color:#5E5A6B">{{ b.cls }} · publié le {{ b.pub }}</span></div><span style="font-size:17px;font-weight:800;color:#1B1726">{{ b.mg }}</span></button>
+<button onClick="{{ b.pdf }}" aria-label="Télécharger le PDF" style="width:44px;height:44px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:var(--acc);cursor:pointer"><i class="fa-solid fa-download"></i></button>
+</div>
+</sc-for>
+<sc-if value="{{ chNoBul }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center"><img src="https://cdn.undraw.co/illustrations/empty_4zx0.svg" alt="" style="width:180px;height:140px;object-fit:contain"><span style="font-size:16px;font-weight:700">Aucun bulletin pour {{ ch.prenom }}</span><span style="font-size:13px;color:#5E5A6B">Les bulletins délivrés de l’année et des années passées s’afficheront ici.</span></div></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ scr.p_bulletin }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;max-width:880px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5E5A6B">{{ bv.school }}</span><span style="font-size:18px;font-weight:800">{{ bv.label }} · {{ bv.year }}</span><span style="font-size:13px;color:#5E5A6B">{{ bv.name }} · {{ bv.cls }} · {{ bv.mat }}</span></div>
+<sc-if value="{{ bv.hasRectif }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;padding:6px 10px;border-radius:999px;background:#FFF3DD;color:#7A4A00;font-size:12px;font-weight:700">{{ bv.rectif }}</span></sc-if></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+<div style="padding:12px;border-radius:12px;background:var(--acc-soft);display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#3B3747">Moyenne</span><span style="font-size:20px;font-weight:800;color:var(--acc)">{{ bv.mg }}</span></div>
+<div style="padding:12px;border-radius:12px;background:#F6F5FA;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#3B3747">Rang</span><span style="font-size:20px;font-weight:800">{{ bv.rank }}<span style="font-size:12px;font-weight:500;color:#5E5A6B"> / {{ bv.eff }}</span></span></div>
+<div style="padding:12px;border-radius:12px;background:#F6F5FA;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#3B3747">Décision</span><span style="font-size:13px;font-weight:700;line-height:1.3">{{ bv.dec }}</span></div>
+</div>
+</div>
+<sc-for list="{{ bvLines }}" as="l" hint-placeholder-count="5">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><i class="fa-solid {{ l.icon }}" style="color:var(--acc);width:18px"></i><span style="flex:1;font-size:15px;font-weight:700">{{ l.name }}</span><span style="font-size:17px;font-weight:800">{{ l.moy }}</span></div>
+<sc-if value="{{ l.has }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#5E5A6B"><span>Coef. {{ l.coef }}</span><span>Rang {{ l.rank }}</span><span>Classe {{ l.mean }}</span><span>Min {{ l.min }} · Max {{ l.max }}</span></div></sc-if>
+<span style="font-size:13px;color:#3B3747;font-style:italic;line-height:1.45">« {{ l.appr }} »</span>
+</div>
+</sc-for>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:12px;font-weight:700;color:#5E5A6B;text-transform:uppercase;letter-spacing:.06em">Appréciation du conseil de classe</span>
+<p style="margin:0;font-size:14px;line-height:1.55">{{ bv.appr }}</p>
+<span style="font-size:12px;color:#5E5A6B">{{ bv.sig }} · délivré le {{ bv.pub }}</span>
+</div>
+<button onClick="{{ bv.pdf }}" style="height:50px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px"><i class="fa-solid fa-download"></i>Télécharger le bulletin (PDF)</button>
+</div>
+</sc-if>
+<sc-if value="{{ scr.p_dossier }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:8px;overflow-x:auto"><sc-for list="{{ children }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.pick }}" style="height:36px;padding:0 14px;border-radius:999px;border:1px solid {{ c.bd }};background:{{ c.bg }};font-size:13px;font-weight:{{ c.fw }};cursor:pointer;flex-shrink:0;color:#1B1726">{{ c.name }}</button></sc-for></div>
+<div style="display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:#F1F0F5;font-size:13px;color:#3B3747"><i class="fa-solid fa-eye"></i>Lecture seule — pour toute correction, contactez le secrétariat.</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px"><span style="font-size:15px;font-weight:700">Identité et scolarité</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px 16px"><sc-for list="{{ dossier }}" as="d" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;color:#5E5A6B">{{ d.k }}</span><span style="font-size:15px;font-weight:600">{{ d.v }}</span></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font-size:15px;font-weight:700">Tuteurs</span>
+<sc-for list="{{ dossTut }}" as="t" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #F1F0F5"><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700">{{ t.name }}</span><span style="font-size:12px;color:#5E5A6B">{{ t.lien }}</span></div><span style="font-size:13px;font-weight:600">{{ t.tel }}</span></div></sc-for></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font-size:15px;font-weight:700">Parcours</span>
+<sc-for list="{{ dossSco }}" as="y" hint-placeholder-count="2"><div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid #F1F0F5;font-size:14px"><span style="font-weight:600">{{ y.y }} · {{ y.c }}</span><span style="color:#14663F;font-weight:600">{{ y.e }}</span></div></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.t_classes }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:#E2F4EA;color:#14663F;font-size:13px;font-weight:500"><i class="fa-solid fa-door-open"></i>Saisie du 1er trimestre ouverte jusqu’au 15/12/2026</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:14px">
+<sc-for list="{{ tClasses }}" as="c" hint-placeholder-count="3">
+<button onClick="{{ c.open }}" style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;text-align:left;cursor:pointer" style-hover="border-color:var(--acc)">
+<div style="display:flex;align-items:center;gap:12px;width:100%"><div style="width:46px;height:46px;border-radius:12px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px">{{ c.cls }}</div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:700;color:#1B1726">Classe de {{ c.cls }}</span><span style="font-size:12px;color:#5E5A6B">Mathématiques · {{ c.eff }} élèves · {{ c.nEv }} évaluations</span></div><i class="fa-solid fa-chevron-right" style="color:#77738A"></i></div>
+<sc-if value="{{ c.pp }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;padding:5px 10px;border-radius:999px;background:#F1F0F5;color:#3B3747;font-size:12px;font-weight:600"><i class="fa-solid fa-star" style="margin-right:6px;color:var(--acc)"></i>Professeur principal</span></sc-if>
+<sc-if value="{{ c.hasDraft }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;width:100%"><div style="display:flex;justify-content:space-between;font-size:12px;color:#3B3747"><span>{{ c.draft }}</span><span style="font-weight:700">{{ c.prog }}</span></div><div style="height:6px;border-radius:3px;background:#F1F0F5"><div style="height:100%;width:{{ c.w }};border-radius:3px;background:var(--acc)"></div></div></div></sc-if>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.t_evals }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+<div style="display:flex;gap:8px;overflow-x:auto;flex:1;min-width:0"><sc-for list="{{ tFilters }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.pick }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">{{ f.label }}</button></sc-for></div>
+<sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}"><button onClick="{{ newEval }}" style="height:42px;padding:0 16px;border-radius:10px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:14px;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center"><i class="fa-solid fa-plus"></i>Nouvelle évaluation</button></sc-if>
+</div>
+<sc-for list="{{ tEvals }}" as="e" hint-placeholder-count="4">
+<button onClick="{{ e.open }}" style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;text-align:left;cursor:pointer;width:100%" style-hover="border-color:var(--acc)">
+<div style="display:flex;gap:12px;align-items:flex-start;width:100%"><div style="width:40px;height:40px;border-radius:10px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid {{ e.icon }}"></i></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font-size:15px;font-weight:700;color:#1B1726">{{ e.title }}</span><span style="font-size:12px;color:#5E5A6B">{{ e.cls }} · {{ e.date }} · sur {{ e.max }} · poids {{ e.poids }}</span></div>
+<span style="padding:5px 10px;border-radius:999px;background:{{ e.pBg }};color:{{ e.pFg }};font-size:12px;font-weight:700;white-space:nowrap;display:flex;gap:6px;align-items:center"><i class="fa-solid {{ e.pIcon }}"></i>{{ e.pLabel }}</span></div>
+<div style="display:flex;align-items:center;gap:12px;width:100%"><div style="flex:1;height:6px;border-radius:3px;background:#F1F0F5"><div style="height:100%;width:{{ e.w }};border-radius:3px;background:var(--acc)"></div></div><span style="font-size:12px;color:#3B3747;font-weight:600">{{ e.prog }}</span><span style="font-size:12px;color:#5E5A6B">Moy. {{ e.mean }}</span></div>
+</button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ scr.t_new }}" hint-placeholder-val="{{ false }}">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:18px;max-width:640px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Classe et matière</span><select value="{{ ne.cls }}" onChange="{{ neSet.cls }}" style="height:48px;padding:0 12px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;color:#1B1726"><option value="3e A">3e A — Mathématiques</option><option value="3e B">3e B — Mathématiques</option><option value="4e A">4e A — Mathématiques</option></select></label>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Période</span><div style="height:48px;padding:0 14px;border-radius:12px;background:#F1F0F5;display:flex;align-items:center;justify-content:space-between;font-size:14px"><span>1er trimestre 2026-2027</span><span style="font-size:12px;color:#14663F;font-weight:600">Saisie ouverte</span></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600">Type d’évaluation</span><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ neTypes }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.pick }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};font-size:13px;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center"><i class="fa-solid {{ t.icon }}"></i>{{ t.label }}</button></sc-for></div></div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Titre</span><input value="{{ ne.title }}" onChange="{{ neSet.title }}" placeholder="Ex. Devoir surveillé n°3" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none" style-focus="border-color:var(--acc);background:#fff"><sc-if value="{{ neHas.title }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ neErr.title }}</span></sc-if></label>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Date</span><input type="date" value="{{ ne.date }}" onChange="{{ neSet.date }}" style="height:48px;padding:0 12px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-if value="{{ neHas.date }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ neErr.date }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Note maximale</span><input inputMode="numeric" value="{{ ne.max }}" onChange="{{ neSet.max }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-if value="{{ neHas.max }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ neErr.max }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Poids dans la période</span><input inputMode="decimal" value="{{ ne.poids }}" onChange="{{ neSet.poids }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-if value="{{ neHas.poids }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ neErr.poids }}</span></sc-if></label>
+</div>
+<div style="display:flex;gap:10px;justify-content:flex-end"><button onClick="{{ neCancel }}" style="height:48px;padding:0 18px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer">Annuler</button><button onClick="{{ neCreate }}" style="height:48px;padding:0 22px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Créer et saisir les notes</button></div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.t_grid }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:820px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:12px;align-items:flex-start"><div style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-size:17px;font-weight:800">{{ ge.title }}</span><span style="font-size:12px;color:#5E5A6B">{{ ge.cls }} · Mathématiques · {{ ge.date }} · sur {{ ge.max }} · poids {{ ge.poids }}</span></div><span style="padding:5px 10px;border-radius:999px;background:{{ ge.pBg }};color:{{ ge.pFg }};font-size:12px;font-weight:700;white-space:nowrap"><i class="fa-solid {{ ge.pIcon }}" style="margin-right:6px"></i>{{ ge.pLabel }}</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+<span style="padding:6px 10px;border-radius:8px;background:{{ gLeftBg }};color:{{ gLeftColor }};font-size:12px;font-weight:700">{{ gLeftLabel }}</span>
+<sc-if value="{{ gEditable }}" hint-placeholder-val="{{ true }}"><span style="padding:6px 10px;border-radius:8px;background:{{ save.bg }};color:{{ save.fg }};font-size:12px;font-weight:600;display:flex;gap:6px;align-items:center"><i class="fa-solid {{ save.icon }}"></i>{{ save.label }}</span>
+<button onClick="{{ toggleNet }}" style="margin-left:auto;height:32px;padding:0 10px;border-radius:8px;border:1px solid #E6E3EE;background:#fff;color:{{ netFg }};font-size:12px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center" title="Simuler une coupure réseau"><i class="fa-solid {{ netIcon }}"></i>{{ netLabel }}</button></sc-if>
+</div>
+<sc-if value="{{ gLocked }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;padding:12px;border-radius:10px;background:#F1F0F5;font-size:13px;color:#3B3747;line-height:1.45"><i class="fa-solid fa-lock" style="margin-top:2px"></i>{{ gLockMsg }}</div></sc-if>
+<sc-if value="{{ gEditable }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;color:#5E5A6B"><i class="fa-regular fa-keyboard" style="margin-right:6px"></i>Entrée ou ↓ pour l’élève suivant · enregistrement automatique</span></sc-if>
+</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<div style="display:grid;grid-template-columns:28px minmax(0,1fr) 72px 44px 40px;gap:8px;align-items:center;padding:10px 12px;background:#F8F7FB;font-size:11px;font-weight:700;color:#5E5A6B;text-transform:uppercase;letter-spacing:.04em"><span>N°</span><span>Élève</span><span style="text-align:center">/ {{ ge.max }}</span><span style="text-align:center">Abs.</span><span></span></div>
+<sc-for list="{{ gRows }}" as="r" hint-placeholder-count="10">
+<div style="border-top:1px solid #F1F0F5">
+<div style="display:grid;grid-template-columns:28px minmax(0,1fr) 72px 44px 40px;gap:8px;align-items:center;padding:6px 12px;min-height:52px">
+<span style="font-size:12px;color:#77738A;font-weight:600">{{ r.n }}</span>
+<div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="width:30px;height:30px;border-radius:50%;background:{{ r.avBg }};color:{{ r.avFg }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">{{ r.init }}</span><span style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><strong>{{ r.name }}</strong> {{ r.prenom }}</span></div>
+<input data-row="{{ r.i }}" inputMode="decimal" aria-label="Note" value="{{ r.v }}" placeholder="{{ r.ph }}" disabled="{{ r.dis }}" onChange="{{ r.onChange }}" onKeyDown="{{ r.onKey }}" style="width:100%;height:40px;border-radius:10px;border:1px solid {{ r.inBd }};background:{{ r.inBg }};text-align:center;font-size:16px;font-weight:700;color:#1B1726;outline:none" style-focus="border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)">
+<button onClick="{{ r.onAbs }}" aria-label="Absent" style="justify-self:center;width:28px;height:28px;border-radius:8px;border:1.5px solid {{ r.absBd }};background:{{ r.absBg }};color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fa-solid {{ r.absIc }}"></i></button>
+<button onClick="{{ r.onObs }}" aria-label="Observation" style="width:36px;height:36px;border-radius:8px;border:none;background:{{ r.obsBg }};color:{{ r.obsFg }};cursor:pointer"><i class="fa-regular fa-comment"></i></button>
+</div>
+<sc-if value="{{ r.hasErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="padding:0 12px 8px 48px;font-size:12px;color:#A3214F;font-weight:600"><i class="fa-solid fa-circle-exclamation" style="margin-right:6px"></i>{{ r.err }}</div></sc-if>
+<sc-if value="{{ r.hasObs }}" hint-placeholder-val="{{ false }}"><div style="padding:0 12px 8px 48px;font-size:12px;color:#5E5A6B;font-style:italic">{{ r.obs }}</div></sc-if>
+<sc-if value="{{ r.obsOpen }}" hint-placeholder-val="{{ false }}"><div style="padding:0 12px 10px 48px"><input value="{{ r.obs }}" onChange="{{ r.onObsChange }}" placeholder="Observation (facultatif)" style="width:100%;height:40px;padding:0 12px;border-radius:10px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:13px;outline:none"></div></sc-if>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ gEditable }}" hint-placeholder-val="{{ true }}"><button onClick="{{ gFillDemo }}" style="align-self:flex-start;border:none;background:none;color:var(--acc);font-size:13px;font-weight:600;cursor:pointer;padding:4px 0">Compléter avec des notes de démonstration</button></sc-if>
+<div style="position:sticky;bottom:0;background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:0 -6px 20px rgba(27,23,38,.06)">
+<div style="flex:1;display:flex;gap:16px;font-size:12px;color:#5E5A6B;flex-wrap:wrap"><span>Moyenne <strong style="font-size:16px;color:#1B1726">{{ gMean }}</strong></span><span>Min <strong style="color:#1B1726">{{ gMin }}</strong></span><span>Max <strong style="color:#1B1726">{{ gMax }}</strong></span><span>Absents <strong style="color:#1B1726">{{ gAbs }}</strong></span></div>
+<sc-if value="{{ gEditable }}" hint-placeholder-val="{{ true }}"><button onClick="{{ gSubmit }}" style="height:46px;padding:0 20px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center"><i class="fa-solid fa-paper-plane"></i>Soumettre</button></sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.t_apprec }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:820px">
+<div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#ECEAF2"><sc-for list="{{ apprTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.pick }}" style="flex:1;height:40px;border-radius:9px;border:none;background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.sh }};font-size:13px;font-weight:700;cursor:pointer">{{ t.label }}</button></sc-for></div>
+<span style="font-size:12px;color:#5E5A6B">250 caractères maximum · enregistrement automatique</span>
+<sc-for list="{{ apprRows }}" as="a" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:30px;height:30px;border-radius:50%;background:{{ a.avBg }};color:{{ a.avFg }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">{{ a.init }}</span><span style="flex:1;font-size:14px;font-weight:700">{{ a.name }}</span><span style="font-size:14px;font-weight:800">{{ a.moy }}</span></div>
+<textarea value="{{ a.text }}" onChange="{{ a.onChange }}" placeholder="{{ a.ph }}" rows="2" maxLength="250" style="padding:10px 12px;border-radius:10px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:14px;resize:vertical;outline:none;line-height:1.45" style-focus="border-color:var(--acc);background:#fff"></textarea>
+<span style="align-self:flex-end;font-size:11px;color:{{ a.cFg }};font-weight:600">{{ a.count }}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ scr.t_recap }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px">
+<sc-for list="{{ recap }}" as="c" hint-placeholder-count="3">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:16px;font-weight:800">{{ c.cls }}</span><span style="font-size:12px;color:#5E5A6B">{{ c.eff }} élèves · {{ c.nEv }} év.</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:28px;font-weight:800;color:var(--acc)">{{ c.mean }}</span><span style="font-size:12px;color:#5E5A6B">moyenne de classe</span></div>
+<div style="height:6px;border-radius:3px;background:#F1F0F5"><div style="height:100%;width:{{ c.w }};border-radius:3px;background:var(--acc)"></div></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:#5E5A6B"><span>Min {{ c.min }}</span><span>Max {{ c.max }}</span><span>≥ 10 : {{ c.pass }}</span></div>
+</div>
+</sc-for>
+</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px"><span style="font-size:15px;font-weight:700">3e A · moyennes en mathématiques</span>
+<sc-for list="{{ recapRows }}" as="r" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:minmax(0,1fr) 90px 48px;gap:10px;align-items:center;font-size:13px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span><div style="height:6px;border-radius:3px;background:#F1F0F5"><div style="height:100%;width:{{ r.w }};border-radius:3px;background:{{ r.bar }}"></div></div><span style="text-align:right;font-weight:700">{{ r.moy }}</span></div></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.d_home }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px">
+<sc-for list="{{ kpis }}" as="k" hint-placeholder-count="3"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center"><div style="width:44px;height:44px;border-radius:12px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:17px"><i class="fa-solid {{ k.icon }}"></i></div><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5E5A6B">{{ k.label }}</span><span style="font-size:22px;font-weight:800">{{ k.v }}</span><span style="font-size:12px;color:#5E5A6B">{{ k.sub }}</span></div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font-size:15px;font-weight:700">Suivi des saisies par classe · T1</span>
+<sc-for list="{{ saisies }}" as="s" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:52px minmax(0,1fr) 48px;gap:12px;align-items:center;font-size:13px"><span style="font-weight:700">{{ s.cls }}</span><div style="display:flex;flex-direction:column;gap:4px"><div style="height:8px;border-radius:4px;background:#F1F0F5"><div style="height:100%;width:{{ s.w }};border-radius:4px;background:{{ s.bar }}"></div></div><span style="font-size:11px;color:#5E5A6B">PP : {{ s.pp }}</span></div><span style="text-align:right;font-weight:700">{{ s.p }}</span></div></sc-for></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font-size:15px;font-weight:700">Moyennes par matière · 3e A</span>
+<sc-for list="{{ subjBars }}" as="s" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:120px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.name }}</span><div style="height:8px;border-radius:4px;background:#F1F0F5"><div style="height:100%;width:{{ s.w }};border-radius:4px;background:{{ s.bar }}"></div></div><span style="text-align:right;font-weight:700">{{ s.v }}</span></div></sc-for></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font-size:15px;font-weight:700">Taux de réussite par niveau</span>
+<div style="display:flex;align-items:flex-end;gap:16px;height:140px"><sc-for list="{{ levelPass }}" as="l" hint-placeholder-count="4"><div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px"><span style="font-size:12px;font-weight:700">{{ l.p }}</span><div style="width:100%;max-width:40px;height:{{ l.h }};background:var(--acc);border-radius:8px 8px 4px 4px"></div><span style="font-size:12px;color:#5E5A6B">{{ l.l }}</span></div></sc-for></div></div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.d_valid }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+<div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#ECEAF2"><sc-for list="{{ vTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.pick }}" style="flex:1;height:40px;border-radius:9px;border:none;background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.sh }};font-size:13px;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center">{{ t.label }}<span style="min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:{{ t.nBg }};color:{{ t.nFg }};font-size:11px;display:flex;align-items:center;justify-content:center">{{ t.n }}</span></button></sc-for></div>
+<sc-if value="{{ vIsTodo }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ vTodoEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center"><img src="https://cdn.undraw.co/illustrations/check-boxes_ewf2.svg" alt="" style="width:170px;height:130px;object-fit:contain"><span style="font-size:15px;font-weight:700">Aucune évaluation à valider</span></div></sc-if>
+<sc-for list="{{ vTodo }}" as="e" hint-placeholder-count="3"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:12px;align-items:flex-start"><div style="width:40px;height:40px;border-radius:10px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid {{ e.icon }}"></i></div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font-size:15px;font-weight:700">{{ e.title }}</span><span style="font-size:12px;color:#5E5A6B">{{ e.meta }} · {{ e.date }}</span><span style="font-size:12px;color:#3B3747;font-weight:600">{{ e.stats }}</span></div></div>
+<div style="display:flex;gap:10px;justify-content:flex-end"><button onClick="{{ e.examine }}" style="height:42px;padding:0 18px;border-radius:10px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Examiner et valider</button></div>
+</div></sc-for>
+</sc-if>
+<sc-if value="{{ vIsDone }}" hint-placeholder-val="{{ false }}">
+<sc-for list="{{ vDone }}" as="e" hint-placeholder-count="3"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:3px"><span style="font-size:14px;font-weight:700">{{ e.title }}</span><span style="font-size:12px;color:#5E5A6B">{{ e.meta }} · {{ e.stats }}</span></div>
+<span style="padding:5px 10px;border-radius:999px;background:{{ e.pBg }};color:{{ e.pFg }};font-size:12px;font-weight:700"><i class="fa-solid {{ e.pIcon }}" style="margin-right:6px"></i>{{ e.pLabel }}</span>
+<button onClick="{{ e.unlock }}" style="height:38px;padding:0 12px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:13px;font-weight:600;cursor:pointer"><i class="fa-solid fa-unlock" style="margin-right:6px"></i>Déverrouiller</button>
+</div></sc-for>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ scr.d_delib }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:960px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:800">Conseil de classe · 3e A</span><span style="font-size:12px;color:#5E5A6B">1er trimestre 2026-2027 · trié par moyenne générale</span></div>
+<div style="display:flex;gap:8px"><button onClick="{{ exportPV }}" style="height:38px;padding:0 12px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#3B3747"><i class="fa-regular fa-file-pdf" style="margin-right:6px"></i>PV</button><button onClick="{{ exportXls }}" style="height:38px;padding:0 12px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#3B3747"><i class="fa-regular fa-file-excel" style="margin-right:6px"></i>Excel</button></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px"><div style="padding:10px 12px;border-radius:10px;background:#F6F5FA;display:flex;flex-direction:column"><span style="font-size:11px;color:#5E5A6B">Effectif</span><span style="font-size:18px;font-weight:800">{{ dl.eff }}</span></div><div style="padding:10px 12px;border-radius:10px;background:#F6F5FA;display:flex;flex-direction:column"><span style="font-size:11px;color:#5E5A6B">Moyenne</span><span style="font-size:18px;font-weight:800">{{ dl.mean }}</span></div><div style="padding:10px 12px;border-radius:10px;background:#F6F5FA;display:flex;flex-direction:column"><span style="font-size:11px;color:#5E5A6B">≥ 10/20</span><span style="font-size:18px;font-weight:800">{{ dl.pass }}</span></div></div>
+<sc-if value="{{ dl.provisional }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:#FFF3DD;color:#7A4A00;font-size:13px;font-weight:500"><i class="fa-solid fa-triangle-exclamation" style="margin-top:2px"></i>{{ dl.provMsg }}</div></sc-if>
+</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<sc-for list="{{ dlRows }}" as="r" hint-placeholder-count="8">
+<div style="border-bottom:1px solid #F1F0F5">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;flex-wrap:wrap">
+<span style="width:34px;font-size:13px;font-weight:800;color:var(--acc)">{{ r.rank }}</span>
+<button onClick="{{ r.toggle }}" style="flex:1;min-width:150px;display:flex;align-items:center;gap:10px;border:none;background:none;padding:0;cursor:pointer;text-align:left"><span style="width:30px;height:30px;border-radius:50%;background:{{ r.avBg }};color:{{ r.avFg }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">{{ r.init }}</span><span style="flex:1;font-size:14px;font-weight:600;color:#1B1726;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span><span style="font-size:15px;font-weight:800;color:{{ r.mgFg }}">{{ r.mg }}</span><i class="fa-solid {{ r.chev }}" style="font-size:11px;color:#77738A"></i></button>
+<select value="{{ r.dec }}" onChange="{{ r.onDec }}" aria-label="Décision du conseil" style="height:38px;padding:0 8px;border-radius:10px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:13px;color:#1B1726;max-width:210px;flex-shrink:0"><sc-for list="{{ r.decs }}" as="d" hint-placeholder-count="0"><option value="{{ d.v }}">{{ d.label }}</option></sc-for></select>
+</div>
+<sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 12px 12px 56px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ r.subs }}" as="s" hint-placeholder-count="0"><span style="padding:5px 8px;border-radius:8px;background:#F6F5FA;font-size:12px;color:#5E5A6B">{{ s.code }} <strong style="color:{{ s.fg }}">{{ s.v }}</strong></span></sc-for></div><span style="font-size:12px;color:#5E5A6B">Historique · {{ r.hist }}</span></div></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.d_bulletins }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;max-width:880px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:800">3e A · 1er trimestre</span><span style="font-size:12px;color:#5E5A6B">{{ b.eff }} élèves · PP : I. Sow</span></div><span style="padding:5px 10px;border-radius:999px;background:{{ b3.bg }};color:{{ b3.fg }};font-size:12px;font-weight:700">{{ b3.label }}</span></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ checks }}" as="c" hint-placeholder-count="3"><div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#FBFAFD;border:1px solid #F1F0F5"><i class="fa-solid {{ c.icon }}" style="color:{{ c.fg }};margin-top:2px"></i><span style="flex:1;font-size:13px;line-height:1.45">{{ c.label }}</span><sc-if value="{{ c.canFix }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.fix }}" style="border:none;background:none;color:var(--acc);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;padding:0">{{ c.fixLabel }}</button></sc-if></div></sc-for>
+</div>
+<sc-if value="{{ b.none }}" hint-placeholder-val="{{ true }}"><button onClick="{{ genBul }}" disabled="{{ b.cantGen }}" style="height:48px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;opacity:{{ b.op }}"><i class="fa-solid fa-gears" style="margin-right:8px"></i>Générer les bulletins</button><sc-if value="{{ b.cantGen }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;color:#A3214F">Génération refusée tant que les manques ne sont pas levés ou ignorés avec motif.</span></sc-if></sc-if>
+<sc-if value="{{ b.gen }}" hint-placeholder-val="{{ false }}"><div style="height:48px;border-radius:12px;background:#EAF0FD;color:#2448B5;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px"><i class="fa-solid fa-spinner fa-spin"></i>Génération en tâche de fond…</div></sc-if>
+<sc-if value="{{ b.ready }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;flex-wrap:wrap"><span style="flex:1;min-width:180px;font-size:13px;color:#3B3747;align-self:center">Bulletins générés, non visibles par les familles tant qu’ils ne sont pas publiés.</span><button onClick="{{ pubBul }}" style="height:48px;padding:0 22px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer"><i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Publier la classe</button></div></sc-if>
+<sc-if value="{{ b.pub }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div style="flex:1;min-width:200px;display:flex;gap:10px;align-items:center;padding:12px;border-radius:10px;background:#E2F4EA;color:#14663F;font-size:13px;font-weight:600"><i class="fa-solid fa-circle-check"></i>Publié le {{ b.pubAt }} · visible sur le portail famille</div><button onClick="{{ rectBul }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:13px;font-weight:600;cursor:pointer">Bulletin rectificatif</button></div></sc-if>
+</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<sc-for list="{{ otherCls }}" as="c" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #F1F0F5"><span style="width:46px;font-size:14px;font-weight:800">{{ c.cls }}</span><span style="flex:1;font-size:13px;color:#5E5A6B">{{ c.sub }}</span><span style="padding:5px 10px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:12px;font-weight:700;white-space:nowrap">{{ c.label }}</span></div></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.a_journal }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:12px;color:#5E5A6B"><i class="fa-solid fa-lock" style="margin-right:6px"></i>Journal non modifiable</span><button onClick="{{ exportLog }}" style="height:38px;padding:0 12px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#3B3747"><i class="fa-regular fa-file-excel" style="margin-right:6px"></i>Exporter</button></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<sc-for list="{{ logs }}" as="l" hint-placeholder-count="5"><div style="display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #F1F0F5"><div style="width:36px;height:36px;border-radius:10px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid {{ l.icon }}"></i></div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font-size:14px;font-weight:700">{{ l.action }}</span><span style="font-size:13px;color:#3B3747">{{ l.entity }}</span><sc-if value="{{ l.hasDiff }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#5E5A6B">{{ l.before }} → <strong style="color:#1B1726">{{ l.after }}</strong></span></sc-if><span style="font-size:12px;color:#77738A">{{ l.who }} · {{ l.at }}</span></div></div></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.s_list }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<div style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:12px;background:#fff;border:1px solid #E6E3EE"><i class="fa-solid fa-magnifying-glass" style="color:var(--acc)"></i><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Nom, prénom ou matricule" aria-label="Rechercher" style="flex:1;min-width:0;border:none;outline:none;font-size:14px;background:transparent"></div>
+<button onClick="{{ importXls }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:13px;font-weight:600;cursor:pointer"><i class="fa-solid fa-file-import" style="margin-right:6px"></i>Importer</button>
+<button onClick="{{ exportList }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:13px;font-weight:600;cursor:pointer"><i class="fa-regular fa-file-excel" style="margin-right:6px"></i>Excel</button>
+<button onClick="{{ exportPdf }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:13px;font-weight:600;cursor:pointer"><i class="fa-regular fa-file-pdf" style="margin-right:6px"></i>PDF</button>
+</div>
+<div style="display:flex;gap:8px;overflow-x:auto;align-items:center">
+<select value="{{ fClass }}" onChange="{{ onFClass }}" aria-label="Classe" style="height:36px;padding:0 8px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;font-size:13px;flex-shrink:0"><sc-for list="{{ fClasses }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select>
+<select value="{{ fStat }}" onChange="{{ onFStat }}" aria-label="Statut" style="height:36px;padding:0 8px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;font-size:13px;flex-shrink:0"><sc-for list="{{ fStats }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select>
+<button onClick="{{ togRed }}" style="height:36px;padding:0 12px;border-radius:10px;border:1px solid {{ fRed.bd }};background:{{ fRed.bg }};color:{{ fRed.fg }};font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">Redoublants</button>
+<button onClick="{{ togInc }}" style="height:36px;padding:0 12px;border-radius:10px;border:1px solid {{ fInc.bd }};background:{{ fInc.bg }};color:{{ fInc.fg }};font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">Dossier incomplet</button>
+<span style="margin-left:auto;font-size:12px;color:#5E5A6B;white-space:nowrap;padding-left:8px">{{ count }}</span>
+</div>
+<sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-radius:12px;background:#1B1726;color:#fff"><span style="font-size:13px;font-weight:700;flex:1">{{ selLabel }}</span><button onClick="{{ bulkClass }}" style="height:36px;padding:0 12px;border-radius:9px;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Changer de classe</button><button onClick="{{ bulkCert }}" style="height:36px;padding:0 12px;border-radius:9px;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Certificats</button><button onClick="{{ clearSel }}" aria-label="Désélectionner" style="width:36px;height:36px;border-radius:9px;border:none;background:transparent;color:#fff;cursor:pointer"><i class="fa-solid fa-xmark"></i></button></div></sc-if>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:40px minmax(200px,2fr) 120px 70px 60px 110px 100px 32px;gap:8px;align-items:center;padding:12px 14px;background:#F8F7FB;font-size:12px;font-weight:600;color:#5E5A6B"><button onClick="{{ toggleAll }}" aria-label="Tout sélectionner" style="width:20px;height:20px;border-radius:6px;border:1.5px solid {{ selAllBd }};background:{{ selAllBg }};color:#fff;font-size:10px;cursor:pointer;padding:0"><i class="fa-solid {{ selAllIc }}"></i></button><span>Élève</span><span>Matricule</span><span>Classe</span><span>Sexe</span><span>Statut</span><span>Dossier</span><span></span></div></sc-if>
+<sc-for list="{{ students }}" as="s" hint-placeholder-count="8">
+<sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:40px minmax(200px,2fr) 120px 70px 60px 110px 100px 32px;gap:8px;align-items:center;padding:10px 14px;border-top:1px solid #F1F0F5;background:{{ s.rowBg }};font-size:13px">
+<button onClick="{{ s.toggle }}" aria-label="Sélectionner" style="width:20px;height:20px;border-radius:6px;border:1.5px solid {{ s.cBd }};background:{{ s.cBg }};color:#fff;font-size:10px;cursor:pointer;padding:0"><i class="fa-solid {{ s.cIc }}"></i></button>
+<button onClick="{{ s.open }}" style="display:flex;align-items:center;gap:10px;border:none;background:none;padding:0;cursor:pointer;text-align:left;min-width:0"><span style="width:32px;height:32px;border-radius:50%;background:{{ s.avBg }};color:{{ s.avFg }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">{{ s.init }}</span><span style="font-weight:600;color:#1B1726;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.name }}</span></button>
+<span style="color:#3B3747">{{ s.mat }}</span><span>{{ s.cls }}</span><span>{{ s.sexe }}</span>
+<span style="justify-self:start;padding:4px 9px;border-radius:999px;background:{{ s.sBg }};color:{{ s.sFg }};font-size:12px;font-weight:700">{{ s.statut }}</span>
+<span style="color:{{ s.dFg }};font-weight:600">{{ s.dossier }}</span>
+<button onClick="{{ s.open }}" aria-label="Ouvrir la fiche" style="border:none;background:none;color:#5E5A6B;cursor:pointer"><i class="fa-solid fa-chevron-right"></i></button>
+</div></sc-if>
+<sc-if value="{{ isMob }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid #F1F0F5;background:{{ s.rowBg }}">
+<button onClick="{{ s.toggle }}" aria-label="Sélectionner" style="width:44px;height:44px;margin:-10px -6px -10px -10px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="width:20px;height:20px;border-radius:6px;border:1.5px solid {{ s.cBd }};background:{{ s.cBg }};color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center"><i class="fa-solid {{ s.cIc }}"></i></span></button>
+<button onClick="{{ s.open }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:none;background:none;padding:0;cursor:pointer;text-align:left"><span style="width:38px;height:38px;border-radius:50%;background:{{ s.avBg }};color:{{ s.avFg }};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">{{ s.init }}</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700;color:#1B1726;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.name }}</span><span style="font-size:12px;color:#5E5A6B">{{ s.mat }} · {{ s.cls }}</span></span>
+<span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="padding:3px 8px;border-radius:999px;background:{{ s.sBg }};color:{{ s.sFg }};font-size:11px;font-weight:700">{{ s.statut }}</span><sc-if value="{{ s.inc }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#A3214F;font-weight:600">Incomplet</span></sc-if></span></button>
+</div></sc-if>
+</sc-for>
+<sc-if value="{{ noStudents }}" hint-placeholder-val="{{ false }}"><div style="padding:28px;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="https://cdn.undraw.co/illustrations/empty_4zx0.svg" alt="" style="width:150px;height:110px;object-fit:contain"><span style="font-size:14px;font-weight:700">Aucun élève ne correspond aux filtres</span></div></sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.s_incomplete }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+<div style="display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:#FFF3DD;color:#7A4A00;font-size:13px;line-height:1.45"><i class="fa-solid fa-triangle-exclamation" style="margin-top:2px"></i><span>{{ incCount }} dossiers soumis avec des pièces manquantes : ils ne peuvent pas être validés tant qu’elles ne sont pas fournies.</span></div>
+<sc-for list="{{ incList }}" as="s" hint-placeholder-count="3"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="width:38px;height:38px;border-radius:50%;background:{{ s.avBg }};color:{{ s.avFg }};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ s.init }}</span><div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;font-weight:700">{{ s.name }} <span style="font-weight:500;color:#5E5A6B;font-size:12px">· {{ s.cls }} · {{ s.mat }}</span></span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ s.missing }}" as="m" hint-placeholder-count="1"><span style="padding:4px 8px;border-radius:8px;background:#FCE8EF;color:#A3214F;font-size:12px;font-weight:600">{{ m.m }}</span></sc-for></div></div><button onClick="{{ s.open }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:13px;font-weight:700;cursor:pointer">Compléter</button></div></sc-for>
+<sc-if value="{{ incEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="https://cdn.undraw.co/illustrations/check-boxes_ewf2.svg" alt="" style="width:160px;height:120px;object-fit:contain"><span style="font-size:15px;font-weight:700">Tous les dossiers sont complets</span></div></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ scr.s_fiche }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;max-width:960px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+<span style="width:64px;height:64px;border-radius:50%;background:{{ f.avBg }};color:{{ f.avFg }};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ f.init }}</span>
+<div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:4px"><span style="font-size:20px;font-weight:800">{{ f.name }}</span><span style="font-size:13px;color:#5E5A6B">Matricule {{ f.mat }} · {{ f.cls }}</span><span style="align-self:flex-start;padding:4px 9px;border-radius:999px;background:{{ f.sBg }};color:{{ f.sFg }};font-size:12px;font-weight:700">{{ f.statut }}</span></div>
+<div style="display:flex;gap:8px"><button onClick="{{ fCert }}" style="height:42px;padding:0 14px;border-radius:10px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:13px;font-weight:600;cursor:pointer">Certificat</button><button onClick="{{ fEdit }}" style="height:42px;padding:0 18px;border-radius:10px;border:none;background:var(--acc);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Modifier</button></div>
+</div>
+<div style="display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid #ECEAF2"><sc-for list="{{ fTabs }}" as="t" hint-placeholder-count="7"><button onClick="{{ t.pick }}" style="height:44px;padding:0 12px;border:none;background:none;border-bottom:2px solid {{ t.bd }};color:{{ t.fg }};font-size:14px;font-weight:{{ t.fw }};cursor:pointer;white-space:nowrap">{{ t.label }}</button></sc-for></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px">
+<sc-if value="{{ ft.id }}" hint-placeholder-val="{{ true }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px"><sc-for list="{{ fId }}" as="d" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;color:#5E5A6B">{{ d.k }}</span><span style="font-size:15px;font-weight:600">{{ d.v }}</span></div></sc-for></div></sc-if>
+<sc-if value="{{ ft.tut }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:12px"><sc-for list="{{ fTut }}" as="t" hint-placeholder-count="2"><div style="border:1px solid #ECEAF2;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px"><span style="font-size:15px;font-weight:700">{{ t.name }}</span><span style="font-size:12px;color:var(--acc);font-weight:600">{{ t.lien }}</span><span style="font-size:13px"><i class="fa-solid fa-phone" style="width:18px;color:#5E5A6B"></i>{{ t.tel }}</span><span style="font-size:13px"><i class="fa-solid fa-briefcase" style="width:18px;color:#5E5A6B"></i>{{ t.prof }}</span><span style="font-size:13px"><i class="fa-solid fa-location-dot" style="width:18px;color:#5E5A6B"></i>{{ t.addr }}</span></div></sc-for></div></sc-if>
+<sc-if value="{{ ft.sco }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ fSco }}" as="y" hint-placeholder-count="2"><div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F1F0F5;font-size:14px"><span style="font-weight:700">{{ y.y }} · {{ y.c }} <span style="font-weight:500;color:#7A4A00;font-size:12px">{{ y.red }}</span></span><span style="color:#14663F;font-weight:600">{{ y.e }}</span></div></sc-for></sc-if>
+<sc-if value="{{ ft.notes }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:10px"><sc-for list="{{ fNotes }}" as="n" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#F8F7FB"><i class="fa-solid {{ n.icon }}" style="color:var(--acc);width:18px"></i><span style="flex:1;font-size:13px">{{ n.name }} <span style="color:#5E5A6B">· coef {{ n.coef }}</span></span><strong>{{ n.v }}</strong></div></sc-for></div></sc-if>
+<sc-if value="{{ ft.bul }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ fHasBul }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ fBuls }}" as="b" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F1F0F5;font-size:14px"><span><i class="fa-solid fa-file-lines" style="color:var(--acc);margin-right:10px"></i>{{ b.label }} · {{ b.cls }}</span><strong>{{ b.mg }}</strong></div></sc-for></sc-if><sc-if value="{{ fNoBul }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:#5E5A6B">Aucun bulletin archivé.</span></sc-if></sc-if>
+<sc-if value="{{ ft.docs }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:10px"><sc-for list="{{ fDocs }}" as="d" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #ECEAF2;border-radius:12px;flex-wrap:wrap"><i class="fa-solid {{ d.icon }}" style="color:{{ d.sFg }};font-size:18px"></i><div style="flex:1;min-width:160px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ d.label }}</span><span style="font-size:12px;color:#5E5A6B">{{ d.file }}</span></div><span style="padding:4px 9px;border-radius:999px;background:{{ d.sBg }};color:{{ d.sFg }};font-size:12px;font-weight:700">{{ d.status }}</span><sc-if value="{{ d.miss }}" hint-placeholder-val="{{ false }}"><button onClick="{{ d.add }}" style="height:36px;padding:0 12px;border-radius:9px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:13px;font-weight:700;cursor:pointer"><i class="fa-solid fa-paperclip" style="margin-right:6px"></i>Joindre</button></sc-if></div></sc-for></div></sc-if>
+<sc-if value="{{ ft.log }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ fLog }}" as="l" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:2px;padding:12px 0;border-bottom:1px solid #F1F0F5"><span style="font-size:14px;font-weight:700">{{ l.action }}</span><span style="font-size:13px;color:#3B3747">{{ l.entity }}</span><span style="font-size:12px;color:#77738A">{{ l.who }} · {{ l.at }}</span></div></sc-for></sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.s_new }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;max-width:720px">
+<div style="display:flex;align-items:center;gap:8px"><sc-for list="{{ steps }}" as="s" hint-placeholder-count="3"><div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0"><span style="width:30px;height:30px;border-radius:50%;border:1.5px solid {{ s.bd }};background:{{ s.bg }};color:{{ s.fg }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0"><i class="fa-solid {{ s.ic }}"></i>{{ s.num }}</span><span style="font-size:13px;font-weight:700;color:{{ s.lfg }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.label }}</span><div style="flex:1;height:2px;background:#E6E3EE;min-width:8px"></div></div></sc-for></div>
+<sc-if value="{{ is.s1 }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+<span style="font-size:16px;font-weight:800">Identité de l’élève</span>
+<div style="display:flex;gap:14px;align-items:center"><div style="width:72px;height:72px;border-radius:50%;border:1.5px dashed #BDB8CC;display:flex;align-items:center;justify-content:center;color:#77738A;font-size:20px"><i class="fa-solid fa-camera"></i></div><span style="font-size:12px;color:#5E5A6B;line-height:1.45">Photo d’identité<br>JPG ou PNG · 5 Mo max.</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Nom *</span><input value="{{ ins.nom }}" onChange="{{ insSet.nom }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none" style-focus="border-color:var(--acc);background:#fff"><sc-if value="{{ insH.nom }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.nom }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Prénoms *</span><input value="{{ ins.prenom }}" onChange="{{ insSet.prenom }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none" style-focus="border-color:var(--acc);background:#fff"><sc-if value="{{ insH.prenom }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.prenom }}</span></sc-if></label>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Sexe *</span><div style="display:flex;gap:8px"><sc-for list="{{ sexes }}" as="x" hint-placeholder-count="2"><button onClick="{{ x.pick }}" style="flex:1;height:46px;border-radius:12px;border:1px solid {{ x.bd }};background:{{ x.bg }};color:{{ x.fg }};font-size:14px;font-weight:600;cursor:pointer">{{ x.label }}</button></sc-for></div><sc-if value="{{ insH.sexe }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.sexe }}</span></sc-if></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Date de naissance *</span><input type="date" value="{{ ins.dob }}" onChange="{{ insSet.dob }}" style="height:48px;padding:0 12px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-if value="{{ insH.dob }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.dob }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Lieu de naissance *</span><input value="{{ ins.lieu }}" onChange="{{ insSet.lieu }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"><sc-if value="{{ insH.lieu }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.lieu }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Nationalité</span><input value="{{ ins.nat }}" onChange="{{ insSet.nat }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">N° d’acte de naissance</span><input value="{{ ins.acte }}" onChange="{{ insSet.acte }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"></label>
+</div>
+</div></sc-if>
+<sc-if value="{{ is.s2 }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:16px;font-weight:800">Tuteur principal</span><button style="border:none;background:none;color:var(--acc);font-size:13px;font-weight:700;cursor:pointer"><i class="fa-solid fa-link" style="margin-right:6px"></i>Tuteur existant (fratrie)</button></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Nom complet *</span><input value="{{ ins.tNom }}" onChange="{{ insSet.tNom }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"><sc-if value="{{ insH.tNom }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.tNom }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Lien de parenté</span><select value="{{ ins.tLien }}" onChange="{{ insSet.tLien }}" style="height:48px;padding:0 12px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-for list="{{ liens }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Téléphone *</span><input type="tel" value="{{ ins.tTel }}" onChange="{{ insSet.tTel }}" placeholder="+224 622 00 00 00" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"><sc-if value="{{ insH.tTel }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.tTel }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Profession</span><input value="{{ ins.tProf }}" onChange="{{ insSet.tProf }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"></label>
+</div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Adresse</span><input value="{{ ins.tAddr }}" onChange="{{ insSet.tAddr }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"></label>
+</div></sc-if>
+<sc-if value="{{ is.s3 }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+<span style="font-size:16px;font-weight:800">Scolarité demandée · 2026-2027</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Niveau</span><select value="{{ ins.niveau }}" onChange="{{ insSet.niveau }}" style="height:48px;padding:0 12px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-for list="{{ niveaux }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Classe souhaitée</span><select value="{{ ins.classe }}" onChange="{{ insSet.classe }}" style="height:48px;padding:0 12px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px"><sc-for list="{{ classesOpt }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select></label>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:12px;color:#5E5A6B"><span>Capacité de la classe</span><span style="font-weight:700">{{ capLabel }}</span></div><div style="height:6px;border-radius:3px;background:#F1F0F5"><div style="height:100%;width:{{ capW }};background:{{ capBar }};border-radius:3px"></div></div><sc-if value="{{ insH.classe }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ insE.classe }}</span></sc-if></div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Établissement d’origine</span><input value="{{ ins.origine }}" onChange="{{ insSet.origine }}" placeholder="Laisser vide si déjà scolarisé ici" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"></label>
+<button onClick="{{ togRedI }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border:none;background:none;padding:0;cursor:pointer;text-align:left"><span style="font-size:14px;font-weight:600;color:#1B1726">Redoublant</span><span style="width:44px;height:26px;border-radius:13px;background:{{ redBg }};position:relative;flex-shrink:0"><span style="position:absolute;top:2px;left:{{ redX }};width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span></button>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600">Pièces justificatives</span>
+<sc-for list="{{ pieces }}" as="p" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #ECEAF2;border-radius:12px"><i class="fa-solid {{ p.icon }}" style="color:{{ p.sFg }}"></i><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600">{{ p.label }}</span><span style="font-size:11px;color:#5E5A6B">{{ p.req }} · PDF ou image, 5 Mo max.</span></div><span style="padding:3px 8px;border-radius:999px;background:{{ p.sBg }};color:{{ p.sFg }};font-size:11px;font-weight:700">{{ p.status }}</span><button onClick="{{ p.toggle }}" style="height:34px;padding:0 10px;border-radius:9px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:12px;font-weight:600;cursor:pointer">{{ p.btn }}</button></div></sc-for>
+<span style="font-size:12px;color:#5E5A6B">Un dossier peut être soumis avec des pièces manquantes, mais il ne pourra pas être validé.</span></div>
+</div></sc-if>
+<sc-if value="{{ is.done }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+<img src="https://cdn.undraw.co/illustrations/check-boxes_ewf2.svg" alt="" style="width:170px;height:130px;object-fit:contain">
+<span style="font-size:18px;font-weight:800">Dossier soumis</span>
+<span style="font-size:14px;color:#3B3747">{{ insDone.name }} · {{ insDone.cls }} · matricule <strong>{{ insDone.mat }}</strong></span>
+<sc-if value="{{ insDone.hasMissing }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:12px;border-radius:12px;background:#FFF3DD;color:#7A4A00;font-size:13px"><span style="font-weight:700">Pièces manquantes — validation impossible en l’état</span><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"><sc-for list="{{ insDone.missing }}" as="m" hint-placeholder-count="0"><span style="padding:3px 8px;border-radius:8px;background:#fff">{{ m.m }}</span></sc-for></div></div></sc-if>
+<sc-if value="{{ insDone.complete }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#14663F;font-weight:600">Dossier complet — en attente de validation par la direction.</span></sc-if>
+<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button onClick="{{ insPrint }}" style="height:46px;padding:0 16px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer"><i class="fa-solid fa-print" style="margin-right:8px"></i>Fiche d’inscription</button><button onClick="{{ insReset }}" style="height:46px;padding:0 18px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Nouvelle inscription</button></div>
+</div></sc-if>
+<sc-if value="{{ is.form }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;flex-wrap:wrap">
+<sc-if value="{{ is.notFirst }}" hint-placeholder-val="{{ false }}"><button onClick="{{ insPrev }}" style="height:48px;padding:0 16px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer"><i class="fa-solid fa-arrow-left" style="margin-right:8px"></i>Précédent</button></sc-if>
+<div style="flex:1"></div>
+<button onClick="{{ insDraft }}" style="height:48px;padding:0 16px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer">Brouillon</button>
+<sc-if value="{{ is.notLast }}" hint-placeholder-val="{{ true }}"><button onClick="{{ insNext }}" style="height:48px;padding:0 20px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Continuer<i class="fa-solid fa-arrow-right" style="margin-left:8px"></i></button></sc-if>
+<sc-if value="{{ is.last }}" hint-placeholder-val="{{ false }}"><button onClick="{{ insSubmit }}" style="height:48px;padding:0 20px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Soumettre le dossier</button></sc-if>
+</div></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ scr.a_home }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:12px"><sc-for list="{{ adminStats }}" as="k" hint-placeholder-count="4"><div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:16px;display:flex;gap:12px;align-items:center"><div style="width:40px;height:40px;border-radius:12px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center"><i class="fa-solid {{ k.i }}"></i></div><div style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ k.v }}</span><span style="font-size:12px;color:#5E5A6B">{{ k.l }}</span></div></div></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:15px;font-weight:700">Années scolaires</span><button onClick="{{ dupYear }}" style="height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:13px;font-weight:700;cursor:pointer"><i class="fa-regular fa-copy" style="margin-right:6px"></i>Dupliquer</button></div>
+<sc-for list="{{ years }}" as="y" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #F1F0F5"><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700">{{ y.y }}</span><span style="font-size:12px;color:#5E5A6B">{{ y.sub }}</span></div><span style="padding:4px 9px;border-radius:999px;background:{{ y.bg }};color:{{ y.fg }};font-size:12px;font-weight:700">{{ y.s }}</span></div></sc-for>
+<span style="font-size:12px;color:#5E5A6B">Une seule année active à la fois · une année clôturée est en lecture seule définitive.</span></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font-size:15px;font-weight:700">Périodes 2026-2027 · fenêtres de saisie</span>
+<sc-for list="{{ periodsA }}" as="p" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #F1F0F5"><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700">{{ p.l }}</span><span style="font-size:12px;color:#5E5A6B">{{ p.d }}</span></div><span style="padding:4px 9px;border-radius:999px;background:{{ p.bg }};color:{{ p.fg }};font-size:12px;font-weight:700">{{ p.s }}</span></div></sc-for></div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.a_struct }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+<div style="display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:#EAF0FD;color:#1F3E99;font-size:13px;line-height:1.45"><i class="fa-solid fa-circle-info" style="margin-top:2px"></i>Le coefficient appartient au couple niveau + matière, jamais à la matière seule.</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(4,52px);gap:6px;align-items:center;padding:12px 14px;background:#F8F7FB;font-size:12px;font-weight:700;color:#5E5A6B"><span>Matière</span><sc-for list="{{ levels }}" as="l" hint-placeholder-count="4"><span style="text-align:center">{{ l.l }}</span></sc-for></div>
+<sc-for list="{{ coefRows }}" as="r" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(4,52px);gap:6px;align-items:center;padding:8px 14px;border-top:1px solid #F1F0F5"><div style="display:flex;align-items:center;gap:10px;min-width:0"><i class="fa-solid {{ r.icon }}" style="color:var(--acc);width:18px"></i><span style="display:flex;flex-direction:column;min-width:0"><span style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span><span style="font-size:11px;color:#5E5A6B">{{ r.code }} · {{ r.fam }}</span></span></div>
+<sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="4"><input inputMode="numeric" value="{{ c.v }}" onChange="{{ c.onChange }}" onBlur="{{ c.onBlur }}" aria-label="Coefficient" style="width:100%;height:38px;border-radius:9px;border:1px solid #E6E3EE;background:#F7F6FA;text-align:center;font-size:15px;font-weight:700;outline:none" style-focus="border-color:var(--acc);background:#fff"></sc-for></div></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.a_users }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+<div style="display:flex;justify-content:flex-end"><button onClick="{{ addUser }}" style="height:42px;padding:0 16px;border-radius:10px;border:1px solid var(--acc);background:#fff;color:var(--acc);font-size:14px;font-weight:700;cursor:pointer"><i class="fa-solid fa-plus" style="margin-right:8px"></i>Créer un compte</button></div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;overflow:hidden">
+<sc-for list="{{ usersList }}" as="u" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #F1F0F5;flex-wrap:wrap">
+<span style="width:38px;height:38px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ u.init }}</span>
+<div style="flex:1;min-width:170px;display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:700">{{ u.name }}</span><span style="font-size:12px;color:#5E5A6B;word-break:break-all">{{ u.email }}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ u.rolesL }}" as="r" hint-placeholder-count="1"><span style="padding:3px 8px;border-radius:999px;background:#F1F0F5;font-size:11px;font-weight:600;color:#3B3747">{{ r.r }}</span></sc-for></div></div>
+<button onClick="{{ u.toggle }}" style="display:flex;align-items:center;gap:8px;border:none;background:none;cursor:pointer;padding:0"><span style="font-size:12px;font-weight:600;color:{{ u.sFg }}">{{ u.state }}</span><span style="width:44px;height:26px;border-radius:13px;background:{{ u.tBg }};position:relative"><span style="position:absolute;top:2px;left:{{ u.tX }};width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span></button>
+</div></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ scr.profile }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;max-width:640px">
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;gap:14px;align-items:center">
+<span style="width:60px;height:60px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800">{{ user.init }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font-size:18px;font-weight:800">{{ user.name }}</span><span style="font-size:13px;color:#5E5A6B;word-break:break-all">{{ user.email }}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ user.roles }}" as="r" hint-placeholder-count="1"><span style="padding:3px 8px;border-radius:999px;background:var(--acc-soft);color:var(--acc);font-size:11px;font-weight:700">{{ r.label }}</span></sc-for></div></div>
+</div>
+<div style="background:#fff;border:1px solid #ECEAF2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<span style="font-size:15px;font-weight:700">Changer de mot de passe</span>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Mot de passe actuel</span><input type="password" value="{{ pw.cur }}" onChange="{{ pwSet.cur }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"><sc-if value="{{ pwH.cur }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ pwE.cur }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Nouveau mot de passe</span><input type="password" value="{{ pw.n1 }}" onChange="{{ pwSet.n1 }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"><span style="font-size:12px;color:{{ pwLenFg }}">{{ pwLen }}</span><sc-if value="{{ pwH.n1 }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ pwE.n1 }}</span></sc-if></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Confirmer</span><input type="password" value="{{ pw.n2 }}" onChange="{{ pwSet.n2 }}" style="height:48px;padding:0 14px;border-radius:12px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:15px;outline:none"><sc-if value="{{ pwH.n2 }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12px;color:#A3214F">{{ pwE.n2 }}</span></sc-if></label>
+<button onClick="{{ pwSave }}" style="align-self:flex-start;height:46px;padding:0 20px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Enregistrer</button>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button onClick="{{ switchProfile }}" style="flex:1;height:48px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer"><i class="fa-solid fa-repeat" style="margin-right:8px"></i>Changer de profil (démo)</button><button onClick="{{ logout }}" style="flex:1;height:48px;border-radius:12px;border:1px solid #F3C9D6;background:#fff;color:#A3214F;font-size:14px;font-weight:700;cursor:pointer"><i class="fa-solid fa-arrow-right-from-bracket" style="margin-right:8px"></i>Se déconnecter</button></div>
+</div>
+</sc-if>
+</div>
+</div>
+<sc-if value="{{ isMob }}" hint-placeholder-val="{{ true }}">
+<nav style="flex-shrink:0;background:#fff;border-top:1px solid #ECEAF2;display:flex;padding:6px 4px 10px">
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+<button onClick="{{ n.go }}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;height:52px;justify-content:center;border:none;background:none;color:{{ n.mfg }};font-size:11px;font-weight:{{ n.fw }};cursor:pointer"><i class="fa-solid {{ n.icon }}" style="font-size:18px"></i><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ n.label }}</span></button>
+</sc-for>
+</nav>
+</sc-if>
+</div>
+<sc-if value="{{ showFab }}" hint-placeholder-val="{{ false }}"><button onClick="{{ newEval }}" aria-label="Nouvelle évaluation" style="position:absolute;right:18px;bottom:88px;width:56px;height:56px;border-radius:18px;border:none;background:var(--acc);color:#fff;font-size:20px;box-shadow:0 10px 24px rgba(27,23,38,.22);cursor:pointer;z-index:20"><i class="fa-solid fa-plus"></i></button></sc-if>
+</sc-if>
+<sc-if value="{{ hasSheet }}" hint-placeholder-val="{{ false }}">
+<div style="{{ sheetWrap }}" onClick="{{ closeSheet }}"></div>
+<div style="{{ sheetWrap }};pointer-events:none;background:transparent">
+<div style="{{ sheetPanel }}" role="dialog" aria-modal="true">
+<div style="display:flex;align-items:flex-start;gap:12px"><h2 style="margin:0;flex:1;font-size:18px;font-weight:800;line-height:1.3">{{ sheet.title }}</h2><button onClick="{{ closeSheet }}" aria-label="Fermer" style="pointer-events:auto;width:36px;height:36px;border-radius:50%;border:1px solid #DDD9E6;background:#fff;color:#3B3747;cursor:pointer"><i class="fa-solid fa-xmark"></i></button></div>
+<p style="margin:0;font-size:14px;line-height:1.55;color:#5E5A6B">{{ sheet.text }}</p>
+<div style="display:flex;flex-direction:column;border:1px solid #ECEAF2;border-radius:12px">
+<sc-for list="{{ sheetLines }}" as="l" hint-placeholder-count="0"><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #F1F0F5;font-size:13px"><span style="color:#5E5A6B">{{ l.k }}</span><span style="font-weight:700;text-align:right">{{ l.v }}</span></div></sc-for>
+</div>
+<sc-if value="{{ sheet.motif }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:6px;pointer-events:auto"><span style="font-size:13px;font-weight:600">Motif (journalisé)</span><textarea value="{{ sheetMotif }}" onChange="{{ onSheetMotif }}" rows="3" style="padding:10px 12px;border-radius:10px;border:1px solid #E6E3EE;background:#F7F6FA;font-size:14px;resize:none;outline:none"></textarea></label></sc-if>
+<sc-if value="{{ hasSheetErr }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:13px;color:#A3214F">{{ sheetErr }}</span></sc-if>
+<div style="display:flex;gap:10px;justify-content:flex-end;pointer-events:auto"><button onClick="{{ closeSheet }}" style="height:46px;padding:0 18px;border-radius:12px;border:1px solid #E6E3EE;background:#fff;color:#3B3747;font-size:14px;font-weight:600;cursor:pointer">Annuler</button><button onClick="{{ okSheet }}" style="height:46px;padding:0 20px;border-radius:12px;border:none;background:{{ sheetBtnBg }};color:#fff;font-size:14px;font-weight:700;cursor:pointer">{{ sheet.confirm }}</button></div>
+</div></div>
+</sc-if>
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="{{ toastWrap }}"><div role="status" style="background:#1B1726;color:#fff;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;display:flex;gap:10px;align-items:center;max-width:420px;box-shadow:0 10px 30px rgba(27,23,38,.25)"><i class="fa-solid fa-circle-check" style="color:#7EE0B5"></i>{{ toast }}</div></div></sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;mobile&quot;,&quot;desktop&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;'auto'|'mobile'|'desktop'&quot;,&quot;section&quot;:&quot;Affichage&quot;},&quot;envAccents&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Affichage&quot;},&quot;startRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;parent&quot;,&quot;enseignant&quot;,&quot;direction&quot;,&quot;secretariat&quot;,&quot;admin&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Démo&quot;}}">
+const fmt=n=>(n==null||isNaN(n))?'—':n.toFixed(2).replace('.',',');
+const fmtv=n=>String(n).replace('.',',');
+const rnd=s=>{const x=Math.sin(s*12.9898+78.233)*43758.5453;return x-Math.floor(x);};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const half=v=>Math.round(v*2)/2;
+const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?null:n;};
+const nowStr=()=>new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}).replace(' ',' à ');
+const hhmm=()=>new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+const rk=n=>n==null?'—':(n===1?'1er':n+'e');
+const SCHOOL='Groupe scolaire Les Flamboyants';
+const SUBJ=[
+ {code:'FR',name:'Français',coef:4,icon:'fa-book-open',fam:'Littéraire'},
+ {code:'MA',name:'Mathématiques',coef:4,icon:'fa-square-root-variable',fam:'Scientifique'},
+ {code:'AN',name:'Anglais',coef:2,icon:'fa-language',fam:'Langue'},
+ {code:'HG',name:'Histoire-Géographie',coef:3,icon:'fa-earth-africa',fam:'Littéraire'},
+ {code:'SVT',name:'SVT',coef:2,icon:'fa-leaf',fam:'Scientifique'},
+ {code:'PC',name:'Physique-Chimie',coef:2,icon:'fa-flask',fam:'Scientifique'},
+ {code:'EPS',name:'EPS',coef:1,icon:'fa-person-running',fam:'Sportive'}];
+const SN=Object.fromEntries(SUBJ.map(s=>[s.code,s]));
+const AVC=[['#F3ECFD','#6A1FD0'],['#E3F3EF','#0B6A5B'],['#EAF0FD','#2448B5'],['#FDEDE3','#9A4510'],['#FCE8EF','#A3214F']];
+const NAMES=[['Bah','Mariama','F'],['Barry','Alpha','M'],['Camara','Fatoumata','F'],['Condé','Sékou','M'],['Diallo','Aminata','F'],['Diallo','Ousmane','M'],['Doumbouya','Kadiatou','F'],['Fofana','Ibrahim','M'],['Keïta','Aïssatou','F'],['Kourouma','Mamadou','M'],['Konaté','Hawa','F'],['Kaba','Lansana','M'],['Sylla','Mariame','F'],['Soumah','Abdoulaye','M'],['Sow','Djénabou','F'],['Touré','Moussa','M'],['Traoré','Nènè','F'],['Cissé','Thierno','M'],['Bangoura','Saran','F'],['Baldé','Elhadj','M'],['Haïdara','Oumou','F'],['Kanté','Sidiki','M'],['Millimono','Rose','F'],['Yansané','Karim','M']];
+const mix=(k)=>NAMES.map((n,i)=>[NAMES[(i+k)%24][0],NAMES[(i*7+k)%24][1],NAMES[(i*7+k)%24][2]]);
+const MISSING=['Certificat de transfert','Photo d’identité','Bulletin de l’année précédente'];
+const mk=(list,cls,seed)=>list.map(([nom,prenom,sexe])=>({nom,prenom,sexe})).sort((a,b)=>(a.nom+' '+a.prenom).localeCompare(b.nom+' '+b.prenom,'fr')).map((s,i)=>{
+ const base=(s.prenom==='Aminata'&&cls==='3e A')?14.3:6.5+rnd(i*3+seed)*11;const av={};
+ SUBJ.forEach((sb,k)=>{av[sb.code]=sb.code==='EPS'?null:half(clamp(base+(rnd(i*31+k*17+seed)-.5)*6,2.5,19.5));});
+ const c=AVC[(i+seed)%5];const inc=(i+seed)%7===2;
+ return {...s,id:cls.replace(' ','')+'-'+i,cls,i,base,av,mat:(2021+((i+seed)%4))+'-'+String(1040+i*37+seed*3).padStart(5,'0'),init:(s.prenom[0]+s.nom[0]).toUpperCase(),avBg:c[0],avFg:c[1],redoublant:(i+seed)%9===4,statut:'Inscrit',full:s.prenom+' '+s.nom,nomU:s.nom.toUpperCase(),missing:inc?[MISSING[(i+seed)%3]]:[],dob:String(1+(i*5)%28).padStart(2,'0')+'/'+String(1+(i*3)%12).padStart(2,'0')+'/'+(cls[0]==='3'?2011:cls[0]==='4'?2012:2014)};});
+const R3A=mk(NAMES,'3e A',1);R3A[21].statut='Transféré';
+const R3B=mk(mix(5).slice(0,20),'3e B',5);
+const R4A=mk(mix(9).slice(0,20),'4e A',9);
+const OTH=mk([['Diallo','Moussa','M'],['Camara','Ibrahima','M'],['Bah','Kadiatou','F'],['Sylla','Fodé','M'],['Touré','Mariam','F'],['Keïta','Yaya','M']],'6e B',13);
+const ROSTER={'3e A':R3A,'3e B':R3B,'4e A':R4A,'6e B':OTH};
+const ACTIVE=c=>(ROSTER[c]||[]).filter(s=>s.statut==='Inscrit');
+const ALL=[...R3A,...R4A.slice(0,6),...OTH];
+const AMI=R3A.find(s=>s.prenom==='Aminata');const MOU=OTH.find(s=>s.prenom==='Moussa');
+const TYPES=[['Interrogation','fa-pen'],['Devoir surveillé','fa-file-pen'],['Composition','fa-file-signature'],['Travaux pratiques','fa-flask-vial'],['Oral','fa-microphone']];
+const TYPE_ICON=Object.fromEntries(TYPES);
+const EV0=[
+ {id:'ev1',cls:'3e A',subj:'MA',title:'Interrogation n°1',type:'Interrogation',date:'18/09/2026',max:10,poids:1,state:'validée',mine:true,teacher:'I. Sow'},
+ {id:'ev2',cls:'3e A',subj:'MA',title:'Devoir surveillé n°1',type:'Devoir surveillé',date:'02/10/2026',max:20,poids:2,state:'validée',mine:true,teacher:'I. Sow'},
+ {id:'ev3',cls:'3e A',subj:'MA',title:'Devoir surveillé n°2',type:'Devoir surveillé',date:'16/10/2026',max:20,poids:2,state:'brouillon',mine:true,teacher:'I. Sow'},
+ {id:'ev4',cls:'3e B',subj:'MA',title:'Devoir surveillé n°1',type:'Devoir surveillé',date:'05/10/2026',max:20,poids:2,state:'soumise',mine:true,teacher:'I. Sow'},
+ {id:'ev5',cls:'4e A',subj:'MA',title:'Interrogation n°1',type:'Interrogation',date:'21/09/2026',max:10,poids:1,state:'verrouillée',mine:true,teacher:'I. Sow'},
+ {id:'ev6',cls:'3e A',subj:'FR',title:'Composition de français',type:'Composition',date:'09/10/2026',max:20,poids:3,state:'soumise',mine:false,teacher:'A. Keïta'},
+ {id:'ev7',cls:'4e A',subj:'AN',title:'Oral — présentation',type:'Oral',date:'12/10/2026',max:20,poids:1,state:'soumise',mine:false,teacher:'L. Kaba'},
+ {id:'ev8',cls:'3e A',subj:'HG',title:'Devoir surveillé n°1',type:'Devoir surveillé',date:'01/10/2026',max:20,poids:2,state:'validée',mine:false,teacher:'S. Condé'},
+ {id:'ev9',cls:'3e A',subj:'SVT',title:'Travaux pratiques n°1',type:'Travaux pratiques',date:'25/09/2026',max:20,poids:1,state:'validée',mine:false,teacher:'H. Touré'},
+ {id:'ev10',cls:'3e A',subj:'PC',title:'Devoir surveillé n°1',type:'Devoir surveillé',date:'29/09/2026',max:20,poids:2,state:'validée',mine:false,teacher:'M. Fofana'},
+ {id:'ev11',cls:'3e A',subj:'AN',title:'Interrogation écrite',type:'Interrogation',date:'24/09/2026',max:20,poids:1,state:'validée',mine:false,teacher:'L. Kaba'}];
+const G0={};
+const gfill=(ev,ro,fn)=>{G0[ev]={};ro.filter(s=>s.statut==='Inscrit').forEach((s,i)=>{G0[ev][s.id]=fn(s,i);});};
+gfill('ev1',R3A,(s,i)=>({v:fmtv(half(clamp(s.base/2+(rnd(i*7+1)-.5)*3,0,10))),abs:false,obs:''}));
+gfill('ev2',R3A,(s,i)=>i===6?{v:'',abs:true,obs:'Malade, justificatif fourni'}:{v:fmtv(half(clamp(s.base+(rnd(i*9+2)-.5)*6,0,20))),abs:false,obs:''});
+gfill('ev3',R3A,(s,i)=>({v:i<14?fmtv(half(clamp(s.base+(rnd(i*11+5)-.5)*6,0,20))):'',abs:false,obs:''}));
+gfill('ev4',R3B,(s,i)=>({v:fmtv(half(clamp(s.base+(rnd(i*5+3)-.5)*6,0,20))),abs:false,obs:''}));
+gfill('ev5',R4A,(s,i)=>({v:fmtv(half(clamp(s.base/2+(rnd(i*5+4)-.5)*3,0,10))),abs:false,obs:''}));
+const ARCH=[['a3','3e trimestre',14.0,'5e','03/07/2026','Tableau d’honneur','Très bon trimestre, élève sérieuse et régulière.'],['a2','2e trimestre',13.4,'7e','08/04/2026','Encouragements','Progrès nets, poursuivre les efforts en sciences.'],['a1','1er trimestre',12.8,'9e','19/12/2025','Encouragements','Bon début d’année, doit gagner en confiance à l’oral.']].map(([id,label,t,rank,pub,dec,appr],j)=>{
+ const lines=SUBJ.map((sb,k)=>{const v=half(clamp(t+(rnd(k*5+j*11+2)-.5)*5,4,19.5));return {code:sb.code,v,mean:v-1.2-rnd(k+j)*1.5,min:clamp(v-6-rnd(k*2+j)*2,1,20),max:clamp(v+2+rnd(k*3+j)*2,0,20),rank:1+Math.floor(rnd(k*7+j)*12)};});
+ let n=0,d=0;lines.forEach(l=>{n+=l.v*SN[l.code].coef;d+=SN[l.code].coef;});
+ return {id,label,year:'2025-2026',cls:'4e A',mg:n/d,rank,eff:31,pub,dec,appr,lines};});
+const ENV={portail:{acc:'#0E7C6B',soft:'#E3F3EF',label:'Portail famille'},enseignant:{acc:'#2B59D9',soft:'#EAF0FD',label:'Espace enseignant'},admin:{acc:'#7424E0',soft:'#F3ECFD',label:'Administration'}};
+const ROLES={
+ parent:{label:'Parent',name:'Fatoumata Diallo',sub:'Tutrice · 2 enfants',env:'portail',icon:'fa-people-roof',email:'f.diallo@mail.gn',roles:['Tuteur légal']},
+ enseignant:{label:'Enseignant',name:'Ibrahima Sow',sub:'Mathématiques · PP 3e A',env:'enseignant',icon:'fa-chalkboard-user',email:'i.sow@flamboyants.edu.gn',roles:['Enseignant','Professeur principal']},
+ direction:{label:'Direction',name:'Mariama Camara',sub:'Cheffe d’établissement',env:'admin',icon:'fa-user-tie',email:'m.camara@flamboyants.edu.gn',twofa:true,roles:['Direction']},
+ secretariat:{label:'Secrétariat',name:'Alseny Bangoura',sub:'Agent de scolarité',env:'admin',icon:'fa-folder-open',email:'a.bangoura@flamboyants.edu.gn',roles:['Secrétariat']},
+ admin:{label:'Administrateur',name:'Kadiatou Barry',sub:'Responsable informatique',env:'admin',icon:'fa-gear',email:'k.barry@flamboyants.edu.gn',twofa:true,roles:['Administrateur']}};
+const NAV={
+ parent:[['p_home','Accueil','fa-house'],['p_notes','Notes','fa-chart-simple'],['p_bulletins','Bulletins','fa-file-lines'],['p_dossier','Dossier','fa-id-card']],
+ enseignant:[['t_classes','Mes classes','fa-users'],['t_evals','Évaluations','fa-clipboard-list'],['t_apprec','Appréciations','fa-comment-dots'],['t_recap','Récap','fa-chart-column']],
+ direction:[['d_home','Tableau de bord','fa-gauge'],['d_valid','Validation','fa-circle-check'],['d_delib','Délibération','fa-scale-balanced'],['d_bulletins','Bulletins','fa-file-export'],['a_journal','Journal','fa-clock-rotate-left']],
+ secretariat:[['s_list','Élèves','fa-user-graduate'],['s_new','Inscription','fa-user-plus'],['s_incomplete','Dossiers','fa-folder-open']],
+ admin:[['a_home','Tableau de bord','fa-gauge'],['a_struct','Structure','fa-sitemap'],['a_users','Comptes','fa-user-shield'],['a_journal','Journal','fa-clock-rotate-left']]};
+const TITLES={p_home:'Accueil',p_notes:'Notes publiées',p_bulletins:'Mes bulletins',p_bulletin:'Bulletin',p_dossier:'Informations du dossier',t_classes:'Mes classes',t_evals:'Mes évaluations',t_new:'Nouvelle évaluation',t_grid:'Saisie des notes',t_apprec:'Appréciations',t_recap:'Récapitulatif de ma matière',d_home:'Tableau de bord',d_valid:'Validation des évaluations',d_delib:'Délibération',d_bulletins:'Génération et publication',a_journal:'Journal d’activité',s_list:'Liste des élèves',s_fiche:'Fiche élève',s_new:'Nouvelle inscription',s_incomplete:'Dossiers à compléter',a_home:'Tableau de bord',a_struct:'Niveaux, matières et coefficients',a_users:'Comptes et rôles',profile:'Mon profil'};
+const PARENT={t_new:'t_evals',t_grid:'t_evals',s_fiche:'s_list',p_bulletin:'p_bulletins'};
+const PILL={brouillon:['#F1F0F5','#4E4A5C','Brouillon','fa-pen-to-square'],soumise:['#FFF3DD','#7A4A00','Soumise','fa-paper-plane'],'validée':['#E2F4EA','#14663F','Validée','fa-circle-check'],'verrouillée':['#E8E6EF','#2F2B3A','Verrouillée','fa-lock']};
+const DECS=['—','Félicitations','Encouragements','Tableau d’honneur','Avertissement de travail','Avertissement de conduite'];
+const suggest=m=>m==null?'—':m>=16?'Félicitations':m>=14?'Tableau d’honneur':m>=12?'Encouragements':m<8?'Avertissement de travail':'—';
+const apprAuto=m=>m==null?'Non évalué sur la période.':m>=16?'Excellent travail, continuez ainsi.':m>=14?'Très bon trimestre, travail régulier.':m>=12?'Bon ensemble, efforts réguliers.':m>=10?'Résultats justes, doit approfondir.':'Insuffisant, travail personnel à renforcer.';
+const COEF0={FR:[4,4,4,4],MA:[4,4,4,4],AN:[2,2,2,2],HG:[2,2,3,3],SVT:[2,2,2,2],PC:[1,1,2,2],EPS:[1,1,1,1]};
+const CLASSES={'6e':[['6e A',38,40],['6e B',40,40]],'5e':[['5e A',35,40],['5e B',33,40]],'4e':[['4e A',31,40]],'3e':[['3e A',23,40],['3e B',40,40]]};
+const LOG0=[
+ {who:'Ibrahima Sow',action:'Modification de note',entity:'Interrogation n°1 · 3e A · BAH Mariama',before:'6,5',after:'7',at:'18/10/2026 à 17:42'},
+ {who:'Mariama Camara',action:'Validation',entity:'Devoir surveillé n°1 · Mathématiques · 3e A',before:'Soumise',after:'Validée',at:'17/10/2026 à 10:15'},
+ {who:'Kadiatou Barry',action:'Changement de rôle',entity:'Compte i.sow · Professeur principal 3e A',before:'Enseignant',after:'Enseignant + PP',at:'14/10/2026 à 08:03'},
+ {who:'Système',action:'Connexion échouée',entity:'Compte a.kaba (3/5 essais)',before:'',after:'',at:'13/10/2026 à 22:51'}];
+const USERS0=[['Mariama Camara','m.camara@flamboyants.edu.gn',['Direction'],true],['Ibrahima Sow','i.sow@flamboyants.edu.gn',['Enseignant','Professeur principal'],true],['Aïssatou Keïta','a.keita@flamboyants.edu.gn',['Enseignant'],true],['Alseny Bangoura','a.bangoura@flamboyants.edu.gn',['Secrétariat'],true],['Fatoumata Diallo','f.diallo@mail.gn',['Tuteur légal'],true],['Lansana Kaba','l.kaba@flamboyants.edu.gn',['Enseignant'],false],['Kadiatou Barry','k.barry@flamboyants.edu.gn',['Administrateur'],true]];
+const INS0={nom:'',prenom:'',sexe:'',dob:'',lieu:'',nat:'Guinéenne',acte:'',tNom:'',tLien:'Mère',tTel:'',tProf:'',tAddr:'',niveau:'3e',classe:'3e A',origine:'',red:false,docs:{acte:true,bull:false,transf:false,photo:true}};
+const S_=(o)=>Object.assign({padding:'0'},o);
+const init=()=>({w:typeof window!=='undefined'?window.innerWidth:1200,role:null,authStep:'login',loginRole:'parent',email:'f.diallo@mail.gn',pwd:'Flamboyant2026',showPwd:false,code:'',authErr:'',fEmail:'',
+ screen:'p_home',prev:null,child:'aminata',notesPeriod:'cur',bulView:'cur',
+ evals:EV0.map(e=>({...e})),grids:JSON.parse(JSON.stringify(G0)),gridId:'ev3',gridSave:'saved',savedAt:'17:58',offline:false,pending:0,rowErr:{},openObs:null,
+ tCls:'Toutes',newEv:{cls:'3e A',type:'Devoir surveillé',title:'',date:'2026-10-23',max:'20',poids:'1'},newErr:{},
+ apprMode:'mat',appr:{},apprG:{},dec:{},delibOpen:null,
+ bul:'none',pubAt:null,ignoreEPS:false,epsMotif:'',rectif:0,
+ log:LOG0.slice(),q:'',fClass:'Toutes',fStat:'Tous',fRed:false,fInc:false,sel:{},ficheId:AMI.id,ficheTab:'id',docsDone:{},
+ insStep:1,ins:JSON.parse(JSON.stringify(INS0)),insErr:{},insDone:null,
+ coefs:JSON.parse(JSON.stringify(COEF0)),users:USERS0.map(u=>({name:u[0],email:u[1],roles:u[2],active:u[3]})),
+ validTab:'todo',pw:{cur:'',n1:'',n2:''},pwErr:{},sheet:null,sheetMotif:'',sheetErr:'',toast:null});
+
+class Component extends DCLogic {
+ state=init();
+ componentDidMount(){this._r=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this._r);const r=this.props.startRole;if(r&&r!=='login'&&ROLES[r])this.loginAs(r);}
+ componentWillUnmount(){window.removeEventListener('resize',this._r);}
+ componentDidUpdate(p){if(p.startRole!==this.props.startRole){const r=this.props.startRole;if(r&&ROLES[r])this.loginAs(r);else this.setState({role:null,authStep:'login'});}}
+ loginAs(role){this.setState({role,screen:NAV[role][0][0],authStep:'login',authErr:'',code:''});}
+ go(screen){this.setState(s=>({screen,prev:s.screen,openObs:null}));const el=document.getElementById('ee-scroll');if(el)el.scrollTop=0;}
+ toast(msg){this.setState({toast:msg});clearTimeout(this._t);this._t=setTimeout(()=>this.setState({toast:null}),2800);}
+ addLog(action,entity,before,after){this.setState(s=>({log:[{who:ROLES[s.role]?ROLES[s.role].name:'Système',action,entity,before:before||'',after:after||'',at:nowStr()},...s.log]}));}
+ openSheet(o){this.setState({sheet:o,sheetMotif:'',sheetErr:''});}
+ mathAvg(st,cls,sid){let n=0,d=0;st.evals.forEach(e=>{if(e.cls!==cls||e.subj!=='MA')return;const c=(st.grids[e.id]||{})[sid];if(!c||c.abs||c.v==='')return;const x=num(c.v);if(x==null)return;n+=x/e.max*20*e.poids;d+=e.poids;});return d?n/d:null;}
+ classData(st){
+  const ranks=(arr,get)=>{const v=arr.map(get);return v.map(x=>x==null?null:1+v.filter(y=>y!=null&&y>x).length);};
+  const rows=ACTIVE('3e A').map(s=>{const av={...s.av,MA:this.mathAvg(st,'3e A',s.id)};let n=0,d=0;SUBJ.forEach(sb=>{if(av[sb.code]!=null){n+=av[sb.code]*sb.coef;d+=sb.coef;}});return {s,av,mg:d?n/d:null,sr:{}};});
+  const r=ranks(rows,x=>x.mg);rows.forEach((x,i)=>x.rank=r[i]);
+  const stats={};SUBJ.forEach(sb=>{const rr=ranks(rows,x=>x.av[sb.code]);rows.forEach((x,i)=>x.sr[sb.code]=rr[i]);const f=rows.map(x=>x.av[sb.code]).filter(v=>v!=null);stats[sb.code]=f.length?{min:Math.min(...f),max:Math.max(...f),mean:f.reduce((a,b)=>a+b,0)/f.length}:null;});
+  const m=rows.map(x=>x.mg).filter(v=>v!=null);
+  return {rows,stats,mean:m.reduce((a,b)=>a+b,0)/m.length,pass:m.filter(v=>v>=10).length/m.length,eff:rows.length};}
+ evalStats(st,e){const ro=ACTIVE(e.cls);const g=st.grids[e.id];let vals=[],abs=0;
+  if(g){ro.forEach(s=>{const c=g[s.id];if(!c)return;if(c.abs){abs++;return;}const x=num(c.v);if(c.v!==''&&x!=null)vals.push(x);});}
+  else vals=ro.map(s=>s.av[e.subj]).filter(v=>v!=null).map(v=>v*e.max/20);
+  const mean=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+  return {noted:vals.length,abs,total:ro.length,left:ro.length-vals.length-abs,mean,min:vals.length?Math.min(...vals):null,max:vals.length?Math.max(...vals):null};}
+ setNote(evId,sid,raw,max){
+  const t=raw.trim().replace('.',',');
+  if(t!==''){if(!/^\d{0,3}(,\d{0,2})?$/.test(t))return this.flashErr(sid,'Saisissez un nombre, ex. 12,5');const n=num(t);if(n!=null&&(n<0||n>max))return this.flashErr(sid,'Note refusée : elle doit être comprise entre 0 et '+max);}
+  this.setState(s=>{const g={...(s.grids[evId]||{})};g[sid]={...(g[sid]||{v:'',abs:false,obs:''}),v:t};return {grids:{...s.grids,[evId]:g},rowErr:{...s.rowErr,[sid]:null}};});
+  this.autosave();}
+ patchCell(evId,sid,patch){this.setState(s=>{const g={...(s.grids[evId]||{})};g[sid]={...(g[sid]||{v:'',abs:false,obs:''}),...patch};return {grids:{...s.grids,[evId]:g}};});this.autosave();}
+ flashErr(sid,msg){this.setState(s=>({rowErr:{...s.rowErr,[sid]:msg}}));clearTimeout(this['_e'+sid]);this['_e'+sid]=setTimeout(()=>this.setState(s=>({rowErr:{...s.rowErr,[sid]:null}})),2600);}
+ autosave(){if(this.state.offline){this.setState(s=>({pending:s.pending+1,gridSave:'offline'}));return;}this.setState({gridSave:'saving'});clearTimeout(this._s);this._s=setTimeout(()=>this.setState({gridSave:'saved',savedAt:hhmm()}),650);}
+ focusRow(k,dir){const els=[...document.querySelectorAll('[data-row]')];let i=k;while(i>=0&&i<els.length){const el=document.querySelector('[data-row="'+i+'"]');if(el&&!el.disabled){el.focus();el.select&&el.select();return;}i+=dir;}}
+ renderVals(){
+  const st=this.state,P=this.props;
+  const lay=P.layout??'auto';const isDesk=lay==='desktop'||(lay==='auto'&&st.w>=1024);const frame=lay==='mobile'&&st.w>=560;
+  const role=st.role;const R=role?ROLES[role]:ROLES[st.loginRole];
+  const env=(P.envAccents??true)?ENV[R.env]:ENV.admin;
+  const loggedIn=!!role;const desk=isDesk&&!frame;
+  const V={};
+  V.rootStyle={minHeight:'100vh',background:frame?'#E9E7F0':'#F6F5FA','--acc':env.acc,'--acc-soft':env.soft,display:'flex',justifyContent:'center',alignItems:frame?'center':'stretch',padding:frame?'24px 0':0,fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif",color:'#1B1726'};
+  V.appStyle=frame?{width:390,height:844,borderRadius:44,overflow:'hidden',border:'10px solid #1B1726',boxShadow:'0 30px 70px rgba(27,23,38,.22)',background:'#F6F5FA',display:'flex',flexDirection:'column',position:'relative',transform:'translateZ(0)'}:{width:'100%',height:'100vh',display:'flex',flexDirection:(desk&&loggedIn)?'row':'column',position:'relative',background:'#F6F5FA',overflow:'hidden'};
+  V.contentStyle=desk?{padding:'28px 32px 56px',maxWidth:1180,margin:'0 auto',width:'100%'}:{padding:'16px 16px 96px',width:'100%'};
+  V.isDesk=desk;V.isMob=!desk;V.loggedIn=loggedIn;V.loggedOut=!loggedIn;
+  V.envLabel=env.label;V.envAcc=env.acc;
+  // AUTH
+  V.auth={login:st.authStep==='login',twofa:st.authStep==='2fa',forgot:st.authStep==='forgot',sent:st.authStep==='sent'};
+  V.loginRoles=Object.entries(ROLES).map(([k,r])=>{const on=st.loginRole===k;const e=(P.envAccents??true)?ENV[r.env]:ENV.admin;return {label:r.label,icon:r.icon,bg:on?e.soft:'#FFFFFF',bd:on?e.acc:'#E6E3EE',fg:on?e.acc:'#3B3747',pick:()=>this.setState({loginRole:k,email:r.email,authErr:''})};});
+  V.email=st.email;V.pwd=st.pwd;V.pwdType=st.showPwd?'text':'password';V.eyeIcon=st.showPwd?'fa-eye-slash':'fa-eye';V.authErr=st.authErr;V.hasAuthErr=!!st.authErr;
+  V.onEmail=e=>this.setState({email:e.target.value,authErr:''});V.onPwd=e=>this.setState({pwd:e.target.value,authErr:''});V.togglePwd=()=>this.setState(s=>({showPwd:!s.showPwd}));
+  V.doLogin=e=>{e&&e.preventDefault&&e.preventDefault();if(!/^\S+@\S+\.\S+$/.test(st.email))return this.setState({authErr:'Adresse e-mail invalide.'});if(st.pwd.length<10)return this.setState({authErr:'Le mot de passe compte au moins 10 caractères.'});if(ROLES[st.loginRole].twofa)return this.setState({authStep:'2fa',code:'',authErr:''});this.loginAs(st.loginRole);};
+  V.code=st.code;V.onCode=e=>this.setState({code:e.target.value.replace(/\D/g,'').slice(0,6),authErr:''});V.twofaEmail=ROLES[st.loginRole].email;
+  V.doCode=()=>{if(st.code.length!==6)return this.setState({authErr:'Saisissez les 6 chiffres reçus par courriel.'});this.loginAs(st.loginRole);};
+  V.toForgot=()=>this.setState({authStep:'forgot',authErr:'',fEmail:st.email});V.toLogin=()=>this.setState({authStep:'login',authErr:''});
+  V.fEmail=st.fEmail;V.onFEmail=e=>this.setState({fEmail:e.target.value,authErr:''});V.doForgot=()=>{if(!/^\S+@\S+\.\S+$/.test(st.fEmail))return this.setState({authErr:'Adresse e-mail invalide.'});this.setState({authStep:'sent'});};
+  if(!loggedIn)return Object.assign(V,this.overlays(st,desk));
+  // SHELL
+  const scr=st.screen;V.scr={[scr]:true};V.title=TITLES[scr]||'';
+  const parentOf=PARENT[scr];
+  V.nav=NAV[role].map(([id,label,icon])=>{const on=id===scr||id===parentOf;return {label,icon,go:()=>this.go(id),bg:on?'var(--acc-soft)':'transparent',fg:on?'var(--acc)':'#4E4A5C',fw:on?700:500,bar:on?'var(--acc)':'transparent',mfg:on?'var(--acc)':'#77738A'};});
+  V.hasBack=!!parentOf||scr==='profile';V.noBack=!V.hasBack;
+  V.goBack=()=>this.go(parentOf||st.prev||NAV[role][0][0]);
+  V.user={name:R.name,sub:R.sub,init:R.name.split(' ').map(x=>x[0]).join(''),email:R.email,roles:R.roles.map(x=>({label:x}))};
+  V.goProfile=()=>this.go('profile');V.logout=()=>this.setState({role:null,authStep:'login',sheet:null});
+  V.crumb=parentOf?TITLES[parentOf]:env.label;
+  V.notify=()=>this.toast('Aucune nouvelle notification');
+  Object.assign(V,this.parentVals(st),this.teacherVals(st),this.directionVals(st),this.secVals(st),this.adminVals(st),this.overlays(st,desk));
+  V.showFab=scr==='t_evals'&&!desk;V.newEval=()=>this.go('t_new');
+  return V;}
+ overlays(st,desk){
+  const sh=st.sheet;return {hasSheet:!!sh,sheet:sh||{},sheetLines:(sh&&sh.lines||[]).map(l=>({k:l[0],v:l[1]})),sheetMotif:st.sheetMotif,sheetErr:st.sheetErr,hasSheetErr:!!st.sheetErr,
+  sheetWrap:{position:'absolute',inset:0,background:'rgba(27,23,38,.42)',display:'flex',alignItems:desk?'center':'flex-end',justifyContent:'center',zIndex:50,padding:desk?24:0},
+  sheetPanel:{background:'#fff',width:'100%',maxWidth:desk?460:'100%',borderRadius:desk?18:'22px 22px 0 0',padding:'22px 20px 24px',display:'flex',flexDirection:'column',gap:16,boxShadow:'0 20px 50px rgba(27,23,38,.18)'},
+  sheetBtnBg:sh&&sh.danger?'#C42F2F':'var(--acc)',
+  onSheetMotif:e=>this.setState({sheetMotif:e.target.value.slice(0,200),sheetErr:''}),
+  closeSheet:()=>this.setState({sheet:null}),
+  okSheet:()=>{if(sh.motif&&st.sheetMotif.trim().length<5)return this.setState({sheetErr:'Indiquez un motif (5 caractères minimum).'});const m=st.sheetMotif.trim();this.setState({sheet:null});sh.onOk&&sh.onOk(m);},
+  hasToast:!!st.toast,toast:st.toast,toastWrap:{position:'absolute',left:0,right:0,bottom:desk?28:(st.role?84:24),display:'flex',justifyContent:'center',zIndex:60,pointerEvents:'none',padding:'0 16px'}};}
+ parentVals(st){
+  const V={};const cd=this.classData(st);const pub=st.bul==='published';
+  const kids=[{id:'aminata',s:AMI,cls:'3e A'},{id:'moussa',s:MOU,cls:'6e B'}];
+  V.children=kids.map(k=>{const on=st.child===k.id;return {name:k.s.prenom,cls:k.cls,init:k.s.init,avBg:k.s.avBg,avFg:k.s.avFg,bg:on?'var(--acc-soft)':'#fff',bd:on?'var(--acc)':'#ECEAF2',fw:on?700:500,pick:()=>this.setState({child:k.id,notesPeriod:'cur'})};});
+  const k=kids.find(x=>x.id===st.child);const isA=k.id==='aminata';
+  const me=cd.rows.find(r=>r.s.id===AMI.id);
+  const cur=pub?{id:'cur',label:'1er trimestre',year:'2026-2027',cls:'3e A',mg:me.mg,rank:rk(me.rank),eff:cd.eff,pub:st.pubAt,dec:st.dec[AMI.id]||suggest(me.mg),appr:st.apprG[AMI.id]||'Élève sérieuse et impliquée. Le conseil l’encourage à maintenir ce niveau.',rectif:st.rectif,
+   lines:SUBJ.map(sb=>({code:sb.code,v:me.av[sb.code],mean:cd.stats[sb.code]&&cd.stats[sb.code].mean,min:cd.stats[sb.code]&&cd.stats[sb.code].min,max:cd.stats[sb.code]&&cd.stats[sb.code].max,rank:me.sr[sb.code],appr:sb.code==='MA'&&st.appr[AMI.id]?st.appr[AMI.id]:null}))}:null;
+  const buls=isA?[...(cur?[cur]:[]),...ARCH]:[];
+  const bulCard=b=>({id:b.id,label:b.label,year:b.year,cls:b.cls,mg:fmt(b.mg),rank:b.rank,eff:b.eff,pub:b.pub,dec:b.dec,hasRectif:!!b.rectif,rectif:'Rectificatif n°'+b.rectif,open:()=>{this.setState({bulView:b.id});this.go('p_bulletin');},pdf:()=>this.toast('Bulletin_'+b.label.replace(/ /g,'-')+'_'+b.year+'_'+k.s.prenom+'.pdf téléchargé')});
+  V.ch={name:k.s.full,prenom:k.s.prenom,cls:k.cls,mat:k.s.mat,init:k.s.init,school:SCHOOL};
+  V.chHasBul=buls.length>0;V.chNoBul=!V.chHasBul;
+  V.pendingBanner=isA&&!pub;
+  V.lastBul=buls.length?bulCard(buls[0]):{};
+  V.bulList=buls.map(bulCard);V.bulPending=isA&&!pub;
+  V.evo=isA?[...ARCH].reverse().map(b=>({label:b.label.split(' ')[0].replace('er','').replace('e','')+'e T',year:'25-26',v:fmt(b.mg),h:(b.mg/20*100).toFixed(0)+'%',bg:'#CFE8E2'})).map((x,i)=>({...x,label:'T'+(i+1)+' · 25-26'})).concat(cur?[{label:'T1 · 26-27',v:fmt(cur.mg),h:(cur.mg/20*100).toFixed(0)+'%',bg:'var(--acc)'}]:[]):[];
+  V.evoPending=isA&&!pub;
+  const bv=buls.find(b=>b.id===st.bulView)||buls[0];
+  if(bv){V.bv={...bulCard(bv),appr:bv.appr,school:SCHOOL,name:k.s.full,mat:k.s.mat,sig:'Mariama Camara, cheffe d’établissement'};
+   V.bvLines=bv.lines.map(l=>{const sb=SN[l.code];return {name:sb.name,icon:sb.icon,coef:sb.coef,moy:l.v==null?'Non noté':fmt(l.v),noNote:l.v==null,has:l.v!=null,mean:fmt(l.mean),min:fmt(l.min),max:fmt(l.max),rank:rk(l.rank),appr:l.appr||apprAuto(l.v)};});}
+  else {V.bv={};V.bvLines=[];}
+  // notes
+  const periods=isA?[{id:'cur',label:'T1 · 2026-2027'},{id:'a3',label:'T3 · 2025-2026'},{id:'a2',label:'T2 · 2025-2026'},{id:'a1',label:'T1 · 2025-2026'}]:[{id:'cur',label:'T1 · 2026-2027'}];
+  V.periods=periods.map(p=>{const on=st.notesPeriod===p.id;const locked=p.id==='cur'&&!(isA&&pub);return {label:p.label,lock:locked,bg:on?'var(--acc)':'#fff',fg:on?'#fff':'#3B3747',bd:on?'var(--acc)':'#E6E3EE',pick:()=>this.setState({notesPeriod:p.id})};});
+  const np=st.notesPeriod;const locked=np==='cur'&&!(isA&&pub);V.notesLocked=locked;V.notesOpen=!locked;
+  let subs=[];let nmg=null;
+  if(!locked){if(np==='cur'){nmg=me.mg;subs=SUBJ.map(sb=>{let evs;if(sb.code==='MA')evs=st.evals.filter(e=>e.cls==='3e A'&&e.subj==='MA'&&['validée','verrouillée'].includes(e.state)).map(e=>{const c=(st.grids[e.id]||{})[AMI.id]||{};return {title:e.title,date:e.date,note:c.abs?'Absent':(c.v||'—')+' / '+e.max,abs:!!c.abs};});
+     else{const e=st.evals.find(x=>x.cls==='3e A'&&x.subj===sb.code);evs=e&&me.av[sb.code]!=null?[{title:e.title,date:e.date,note:fmtv(me.av[sb.code])+' / 20',abs:false}]:[];}
+     return {name:sb.name,icon:sb.icon,coef:sb.coef,moy:me.av[sb.code]==null?'—':fmt(me.av[sb.code]),evals:evs,empty:!evs.length};});}
+   else{const b=ARCH.find(x=>x.id===np);nmg=b.mg;subs=b.lines.map(l=>{const sb=SN[l.code];return {name:sb.name,icon:sb.icon,coef:sb.coef,moy:fmt(l.v),evals:[{title:'Composition',date:b.label,note:fmtv(l.v)+' / 20',abs:false}],empty:false};});}}
+  V.noteSubs=subs.map(x=>({...x,noteFg:'#1B1726'}));V.notesMg=fmt(nmg);
+  // dossier
+  V.dossier=[['Nom',k.s.nom],['Prénoms',k.s.prenom],['Matricule',k.s.mat],['Date de naissance',k.s.dob],['Lieu de naissance','Conakry'],['Classe 2026-2027',k.cls],['Statut',k.s.statut],['Redoublant',k.s.redoublant?'Oui':'Non']].map(([a,b])=>({k:a,v:b}));
+  V.dossTut=[{name:'Fatoumata Diallo',lien:'Mère · tutrice principale',tel:'+224 622 14 87 30'},{name:'Mamadou Diallo',lien:'Père',tel:'+224 664 02 55 19'}];
+  V.dossSco=isA?[{y:'2026-2027',c:'3e A',e:'Validée'},{y:'2025-2026',c:'4e A',e:'Validée'},{y:'2024-2025',c:'5e B',e:'Validée'}]:[{y:'2026-2027',c:'6e B',e:'Validée'}];
+  return V;}
+ teacherVals(st){
+  const V={};
+  const mine=st.evals.filter(e=>e.mine);
+  V.tClasses=[['3e A',true],['3e B',false],['4e A',false]].map(([c,pp])=>{const ro=ACTIVE(c);const evs=mine.filter(e=>e.cls===c);const draft=evs.find(e=>e.state==='brouillon');const sd=draft&&this.evalStats(st,draft);
+   return {cls:c,eff:ro.length,pp,nEv:evs.length,hasDraft:!!draft,draft:draft?draft.title:'',prog:sd?sd.noted+sd.abs+'/'+sd.total:'',w:sd?((sd.noted+sd.abs)/sd.total*100).toFixed(0)+'%':'0%',open:()=>{this.setState({tCls:c});this.go('t_evals');}};});
+  V.tFilters=['Toutes','3e A','3e B','4e A'].map(c=>{const on=st.tCls===c;return {label:c,bg:on?'var(--acc)':'#fff',fg:on?'#fff':'#3B3747',bd:on?'var(--acc)':'#E6E3EE',pick:()=>this.setState({tCls:c})};});
+  V.tEvals=mine.filter(e=>st.tCls==='Toutes'||e.cls===st.tCls).map(e=>{const p=PILL[e.state];const s=this.evalStats(st,e);return {title:e.title,cls:e.cls,date:e.date,max:e.max,poids:e.poids,icon:TYPE_ICON[e.type],pBg:p[0],pFg:p[1],pLabel:p[2],pIcon:p[3],prog:(s.noted+s.abs)+'/'+s.total+' notés',w:((s.noted+s.abs)/s.total*100).toFixed(0)+'%',mean:fmt(s.mean==null?null:s.mean*20/e.max),open:()=>{this.setState({gridId:e.id,rowErr:{}});this.go('t_grid');}};});
+  // new eval
+  const ne=st.newEv,er=st.newErr;
+  V.ne=ne;V.neErr={title:er.title||'',date:er.date||'',max:er.max||'',poids:er.poids||''};V.neHas={title:!!er.title,date:!!er.date,max:!!er.max,poids:!!er.poids};
+  V.neTypes=TYPES.map(([t,ic])=>{const on=ne.type===t;return {label:t,icon:ic,bg:on?'var(--acc-soft)':'#fff',fg:on?'var(--acc)':'#3B3747',bd:on?'var(--acc)':'#E6E3EE',pick:()=>this.setState(s=>({newEv:{...s.newEv,type:t}}))};});
+  const setNe=k=>e=>{const v=e.target.value;this.setState(s=>({newEv:{...s.newEv,[k]:v},newErr:{...s.newErr,[k]:null}}));};
+  V.neSet={cls:setNe('cls'),title:setNe('title'),date:setNe('date'),max:setNe('max'),poids:setNe('poids')};
+  V.neCancel=()=>this.go('t_evals');
+  V.neCreate=()=>{const e={};if(ne.title.trim().length<3)e.title='Le titre est obligatoire (3 caractères minimum).';if(!ne.date)e.date='Choisissez la date de l’évaluation.';const mx=num(ne.max);if(mx==null||mx<1||mx>100||!Number.isInteger(mx))e.max='Entier entre 1 et 100.';const pd=num(ne.poids);if(pd==null||pd<=0)e.poids='Le poids doit être strictement positif.';
+   if(Object.keys(e).length)return this.setState({newErr:e});
+   const id='n'+Date.now();const d=ne.date.split('-').reverse().join('/');
+   this.setState(s=>({evals:[...s.evals,{id,cls:ne.cls,subj:'MA',title:ne.title.trim(),type:ne.type,date:d,max:mx,poids:pd,state:'brouillon',mine:true,teacher:'I. Sow'}],grids:{...s.grids,[id]:{}},gridId:id,newEv:{...s.newEv,title:''},newErr:{}}));
+   this.addLog('Création d’évaluation',ne.title.trim()+' · '+ne.cls,'','Brouillon');this.toast('Évaluation créée — saisissez les notes');this.go('t_grid');};
+  // grid
+  const ge=st.evals.find(e=>e.id===st.gridId)||st.evals[2];const g=st.grids[ge.id]||{};const ro=ACTIVE(ge.cls);
+  const editable=ge.state==='brouillon';
+  const gs=this.evalStats(st,ge);const gp=PILL[ge.state];
+  V.ge={title:ge.title,cls:ge.cls,date:ge.date,max:ge.max,poids:ge.poids,type:ge.type,pBg:gp[0],pFg:gp[1],pLabel:gp[2],pIcon:gp[3]};
+  V.gEditable=editable;V.gLocked=!editable;
+  V.gLockMsg=ge.state==='soumise'?'Notes soumises à la direction — en attente de validation. La saisie est fermée.':'Évaluation validée par la direction : elle n’est plus modifiable (RG12). Seule la cheffe d’établissement peut la déverrouiller.';
+  V.gLeft=gs.left;V.gLeftLabel=gs.left===0?'Tous les élèves sont notés':gs.left+(gs.left>1?' élèves restent à noter':' élève reste à noter');V.gLeftColor=gs.left===0?'#14663F':'#7A4A00';V.gLeftBg=gs.left===0?'#E2F4EA':'#FFF3DD';
+  V.gMean=fmt(gs.mean);V.gMin=fmt(gs.min);V.gMax=fmt(gs.max);V.gAbs=gs.abs;V.gTotal=gs.total;
+  const sv=st.offline?['#FFF3DD','#7A4A00','fa-cloud',st.pending+' modification'+(st.pending>1?'s':'')+' conservée'+(st.pending>1?'s':'')+' sur l’appareil']:st.gridSave==='saving'?['#EAF0FD','#2448B5','fa-spinner fa-spin','Enregistrement…']:['#E2F4EA','#14663F','fa-circle-check','Enregistré à '+st.savedAt];
+  V.save={bg:sv[0],fg:sv[1],icon:sv[2],label:sv[3]};
+  V.netIcon=st.offline?'fa-plug-circle-xmark':'fa-wifi';V.netLabel=st.offline?'Hors ligne':'En ligne';V.netFg=st.offline?'#7A4A00':'#4E4A5C';
+  V.toggleNet=()=>{if(st.offline){const p=st.pending;this.setState({offline:false,pending:0,gridSave:'saving'});setTimeout(()=>this.setState({gridSave:'saved',savedAt:hhmm()}),700);if(p)this.toast(p+' modification'+(p>1?'s':'')+' renvoyée'+(p>1?'s':'')+' au serveur');}else{this.setState({offline:true});this.toast('Connexion perdue — les notes restent enregistrées localement');}};
+  V.gRows=ro.map((s,i)=>{const c=g[s.id]||{v:'',abs:false,obs:''};const err=st.rowErr[s.id];const open=st.openObs===s.id;
+   return {i,n:i+1,name:s.nomU,prenom:s.prenom,init:s.init,avBg:s.avBg,avFg:s.avFg,v:c.v,ph:c.abs?'ABS':'—',dis:!editable||c.abs,abs:c.abs,
+    absBg:c.abs?'var(--acc)':'#fff',absBd:c.abs?'var(--acc)':'#BDB8CC',absIc:c.abs?'fa-check':'',inBg:c.abs?'#F1F0F5':err?'#FDECEC':(c.v===''?'#FBFAFD':'#fff'),inBd:err?'#C42F2F':'#DDD9E6',
+    err:err||'',hasErr:!!err,obsOpen:open,obs:c.obs,obsFg:c.obs?'var(--acc)':'#8A869A',obsBg:open?'var(--acc-soft)':'transparent',hasObs:!!c.obs&&!open,
+    onChange:e=>editable&&this.setNote(ge.id,s.id,e.target.value,ge.max),
+    onKey:e=>{if(e.key==='Enter'||e.key==='ArrowDown'){e.preventDefault();this.focusRow(i+1,1);}else if(e.key==='ArrowUp'){e.preventDefault();this.focusRow(i-1,-1);}},
+    onAbs:()=>{if(!editable)return;this.patchCell(ge.id,s.id,{abs:!c.abs,v:''});},
+    onObs:()=>this.setState({openObs:open?null:s.id}),
+    onObsChange:e=>editable&&this.patchCell(ge.id,s.id,{obs:e.target.value.slice(0,120)})};});
+  V.gFillDemo=()=>{if(!editable)return;this.setState(s=>{const gg={...(s.grids[ge.id]||{})};ro.forEach((x,i)=>{const c=gg[x.id]||{v:'',abs:false,obs:''};if(c.v===''&&!c.abs)gg[x.id]={...c,v:fmtv(half(clamp(x.base*ge.max/20+(rnd(i*13+7)-.5)*ge.max*.3,0,ge.max)))};});return {grids:{...s.grids,[ge.id]:gg}};});this.autosave();};
+  V.gSubmit=()=>this.openSheet({title:'Soumettre les notes à la direction ?',text:'Après soumission, la saisie est fermée. Une fois validée par la direction, l’évaluation ne sera plus modifiable.',lines:[['Évaluation',ge.title+' · '+ge.cls],['Notés',gs.noted+' / '+gs.total],['Absents',String(gs.abs)],['Sans note',String(gs.left)],['Moyenne',fmt(gs.mean)+' / '+ge.max]],confirm:'Soumettre',onOk:()=>{this.setState(s=>({evals:s.evals.map(e=>e.id===ge.id?{...e,state:'soumise'}:e)}));this.addLog('Soumission',ge.title+' · '+ge.cls,'Brouillon','Soumise');this.toast('Notes soumises à la direction');}});
+  // appréciations
+  const cd=this.classData(st);
+  V.apprMat=st.apprMode==='mat';V.apprGen=!V.apprMat;
+  V.apprTabs=[['mat','Mathématiques · 3e A'],['gen','Appréciation générale (PP)']].map(([k,l])=>{const on=st.apprMode===k;return {label:l,bg:on?'#fff':'transparent',fg:on?'#1B1726':'#5E5A6B',sh:on?'0 1px 3px rgba(27,23,38,.12)':'none',pick:()=>this.setState({apprMode:k})};});
+  V.apprRows=cd.rows.map(r=>{const key=V.apprMat?'appr':'apprG';const t=st[key][r.s.id]||'';return {name:r.s.nomU+' '+r.s.prenom,init:r.s.init,avBg:r.s.avBg,avFg:r.s.avFg,moy:fmt(V.apprMat?r.av.MA:r.mg),text:t,count:t.length+' / 250',cFg:t.length>=230?'#A3214F':'#77738A',ph:V.apprMat?'Ex. '+apprAuto(r.av.MA):'Appréciation du conseil de classe…',onChange:e=>{const v=e.target.value.slice(0,250);this.setState(s=>({[key]:{...s[key],[r.s.id]:v}}));}};});
+  // recap
+  V.recap=['3e A','3e B','4e A'].map(c=>{const vals=ACTIVE(c).map(s=>this.mathAvg(st,c,s.id)).filter(v=>v!=null);const m=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;return {cls:c,eff:ACTIVE(c).length,nEv:mine.filter(e=>e.cls===c).length,mean:fmt(m),min:fmt(vals.length?Math.min(...vals):null),max:fmt(vals.length?Math.max(...vals):null),pass:vals.length?Math.round(vals.filter(v=>v>=10).length/vals.length*100)+' %':'—',w:m?(m/20*100).toFixed(0)+'%':'0%'};});
+  V.recapRows=cd.rows.slice().sort((a,b)=>(b.av.MA||0)-(a.av.MA||0)).map(r=>({name:r.s.nomU+' '+r.s.prenom,moy:fmt(r.av.MA),w:r.av.MA?(r.av.MA/20*100).toFixed(0)+'%':'0%',bar:r.av.MA!=null&&r.av.MA<10?'#E7A13A':'var(--acc)'}));
+  return V;}
+ directionVals(st){
+  const V={};const cd=this.classData(st);
+  const pend3A=st.evals.filter(e=>e.cls==='3e A'&&!['validée','verrouillée'].includes(e.state));
+  const ev3A=st.evals.filter(e=>e.cls==='3e A');const val3A=ev3A.length-pend3A.length;
+  V.kpis=[{label:'Élèves inscrits',v:'1 248',sub:'18 classes · 2026-2027',icon:'fa-user-graduate'},{label:'Évaluations validées · 3e A',v:val3A+' / '+ev3A.length,sub:pend3A.length?pend3A.length+' en attente':'Prêt pour le conseil',icon:'fa-circle-check'},{label:'Moyenne générale · 3e A',v:fmt(cd.mean),sub:Math.round(cd.pass*100)+' % ≥ 10/20',icon:'fa-chart-line'}];
+  V.saisies=[['6e A','A. Keïta',92],['6e B','O. Barry',78],['5e A','S. Condé',100],['4e A','L. Kaba',85],['3e A','I. Sow',Math.round(val3A/ev3A.length*100)],['3e B','H. Touré',64]].map(([c,pp,p])=>({cls:c,pp,p:p+' %',w:p+'%',bar:p===100?'#1F9D5C':p<70?'#E7A13A':'var(--acc)'}));
+  V.subjBars=SUBJ.filter(sb=>cd.stats[sb.code]).map(sb=>{const m=cd.stats[sb.code].mean;return {name:sb.name,v:fmt(m),w:(m/20*100).toFixed(0)+'%',bar:m<10?'#E7A13A':'var(--acc)'};});
+  V.levelPass=[['6e',78],['5e',81],['4e',74],['3e',Math.round(cd.pass*100)]].map(([l,p])=>({l,p:p+' %',h:p+'%'}));
+  // validation
+  const tm=c=>({FR:'Français',MA:'Mathématiques',AN:'Anglais',HG:'Histoire-Géo.',SVT:'SVT',PC:'Physique-Chimie',EPS:'EPS'})[c];
+  const card=e=>{const s=this.evalStats(st,e);const p=PILL[e.state];return {title:e.title,meta:tm(e.subj)+' · '+e.cls+' · '+e.teacher,date:e.date,icon:TYPE_ICON[e.type],pBg:p[0],pFg:p[1],pLabel:p[2],pIcon:p[3],stats:'Moy. '+fmt(s.mean==null?null:s.mean*20/e.max)+'/20 · '+s.noted+'/'+s.total+' notés'+(s.abs?' · '+s.abs+' abs.':''),
+   examine:()=>this.openSheet({title:'Valider « '+e.title+' » ?',text:'Après validation, l’enseignant ne pourra plus modifier les notes. Le déverrouillage reste possible et sera journalisé.',lines:[['Classe · matière',e.cls+' · '+tm(e.subj)],['Enseignant',e.teacher],['Notés',s.noted+' / '+s.total],['Absents',String(s.abs)],['Sans note',String(s.left)],['Moyenne · min · max',fmt(s.mean)+' · '+fmt(s.min)+' · '+fmt(s.max)+' (/'+e.max+')']],confirm:'Valider',onOk:()=>{this.setState(x=>({evals:x.evals.map(y=>y.id===e.id?{...y,state:'validée'}:y)}));this.addLog('Validation',e.title+' · '+tm(e.subj)+' · '+e.cls,'Soumise','Validée');this.toast('Évaluation validée');}}),
+   unlock:()=>this.openSheet({title:'Déverrouiller l’évaluation ?',text:'L’évaluation repasse en brouillon : l’enseignant pourra de nouveau modifier les notes. Cette action est journalisée avec son motif.',motif:true,danger:true,confirm:'Déverrouiller',onOk:m=>{this.setState(x=>({evals:x.evals.map(y=>y.id===e.id?{...y,state:'brouillon'}:y)}));this.addLog('Déverrouillage',e.title+' · '+e.cls+' — motif : '+m,'Validée','Brouillon');this.toast('Évaluation déverrouillée');}})};};
+  const todo=st.evals.filter(e=>e.state==='soumise');const done=st.evals.filter(e=>e.state==='validée');
+  V.vTodo=todo.map(card);V.vDone=done.map(card);V.vIsTodo=st.validTab==='todo';V.vIsDone=!V.vIsTodo;V.vTodoEmpty=!todo.length;
+  V.vTabs=[['todo','À valider',todo.length],['done','Validées',done.length]].map(([k,l,n])=>{const on=st.validTab===k;return {label:l,n,bg:on?'#fff':'transparent',fg:on?'#1B1726':'#5E5A6B',sh:on?'0 1px 3px rgba(27,23,38,.12)':'none',nBg:on?'var(--acc)':'#DDD9E6',nFg:on?'#fff':'#3B3747',pick:()=>this.setState({validTab:k})};});
+  // delib
+  V.dl={eff:cd.eff,mean:fmt(cd.mean),pass:Math.round(cd.pass*100)+' %',provisional:pend3A.length>0,provMsg:pend3A.length+' évaluation'+(pend3A.length>1?'s':'')+' non validée'+(pend3A.length>1?'s':'')+' : moyennes provisoires.'};
+  V.dlRows=cd.rows.slice().sort((a,b)=>(b.mg||0)-(a.mg||0)).map(r=>{const open=st.delibOpen===r.s.id;const dec=st.dec[r.s.id]??suggest(r.mg);return {rank:rk(r.rank),name:r.s.nomU+' '+r.s.prenom,init:r.s.init,avBg:r.s.avBg,avFg:r.s.avFg,mg:fmt(r.mg),mgFg:r.mg<10?'#A3214F':'#1B1726',dec,open,chev:open?'fa-chevron-up':'fa-chevron-down',
+   toggle:()=>this.setState({delibOpen:open?null:r.s.id}),onDec:e=>{const v=e.target.value;this.setState(s=>({dec:{...s.dec,[r.s.id]:v}}));},
+   decs:DECS.map(d=>({v:d,label:d==='—'?'Aucune mention':d})),
+   subs:SUBJ.map(sb=>({code:sb.code==='SVT'||sb.code==='EPS'?sb.code:sb.name.slice(0,4)+'.',v:fmt(r.av[sb.code]),fg:r.av[sb.code]!=null&&r.av[sb.code]<10?'#A3214F':'#1B1726'})),hist:'T3 25-26 : '+fmt(clamp(r.mg-0.6+rnd(r.s.i)*1.2,0,20))};});
+  // bulletins
+  const epsOk=st.ignoreEPS;
+  V.checks=[{ok:!pend3A.length,label:pend3A.length?pend3A.length+' évaluation(s) non validée(s) : '+pend3A.map(e=>e.title+' ('+tm(e.subj)+')').join(', '):'Toutes les évaluations de la période sont validées',canFix:!!pend3A.length,fixLabel:'Aller à la validation',fix:()=>this.go('d_valid')},
+   {ok:epsOk,label:epsOk?'EPS sans note — ignorée avec motif : « '+st.epsMotif+' »':'EPS : aucune note sur la période',canFix:!epsOk,fixLabel:'Ignorer avec motif',fix:()=>this.openSheet({title:'Ignorer la matière EPS ?',text:'La matière apparaîtra « non notée » sur les bulletins et sera exclue de la moyenne générale. Le motif est journalisé (RG17).',motif:true,confirm:'Ignorer avec motif',onOk:m=>{this.setState({ignoreEPS:true,epsMotif:m});this.addLog('Dérogation génération','EPS · 3e A · T1 — '+m,'','Ignorée');}})},
+   {ok:true,label:'Fenêtre de saisie du 1er trimestre close le 15/12/2026',canFix:false}].map(c=>({...c,icon:c.ok?'fa-circle-check':'fa-circle-exclamation',fg:c.ok?'#14663F':'#A3214F'}));
+  const canGen=V.checks.every(c=>c.ok);
+  V.b={none:st.bul==='none',gen:st.bul==='generating',ready:st.bul==='generated',pub:st.bul==='published',pubAt:st.pubAt,canGen,cantGen:!canGen,op:canGen?1:.45,eff:cd.eff,rectif:st.rectif,hasRectif:st.rectif>0};
+  const bp=st.bul==='published'?['#E2F4EA','#14663F','Publié']:st.bul==='generated'?['#EAF0FD','#2448B5','Généré']:st.bul==='generating'?['#EAF0FD','#2448B5','En cours']:canGen?['#EAF0FD','#2448B5','Prêt à générer']:['#FFF3DD','#7A4A00','Manques à lever'];
+  V.b3={bg:bp[0],fg:bp[1],label:bp[2]};
+  V.genBul=()=>{if(!canGen)return;this.setState({bul:'generating'});this.addLog('Génération des bulletins','3e A · 1er trimestre · '+cd.eff+' élèves','','En file d’attente');setTimeout(()=>{this.setState({bul:'generated'});this.toast(cd.eff+' bulletins générés');},2200);};
+  V.pubBul=()=>this.openSheet({title:'Publier les bulletins de la 3e A ?',text:'La publication est l’acte de délivrance : les bulletins deviennent visibles pour les élèves et leurs tuteurs, et ne pourront plus être modifiés.',lines:[['Classe','3e A · 1er trimestre'],['Bulletins',String(cd.eff)],['Moyenne de classe',fmt(cd.mean)]],confirm:'Publier maintenant',onOk:()=>{const at=nowStr();this.setState({bul:'published',pubAt:at});this.addLog('Publication','Bulletins 3e A · 1er trimestre','Généré','Publié');this.toast('Bulletins publiés — visibles sur le portail famille');}});
+  V.rectBul=()=>this.openSheet({title:'Créer un bulletin rectificatif ?',text:'Le bulletin publié reste archivé. Le rectificatif numéroté le remplace à l’affichage du portail.',motif:true,confirm:'Créer le rectificatif',onOk:m=>{this.setState(s=>({rectif:s.rectif+1}));this.addLog('Bulletin rectificatif','3e A · DIALLO Aminata — '+m,'Version '+(st.rectif+1),'Version '+(st.rectif+2));this.toast('Rectificatif créé');}});
+  V.otherCls=[['3e B','Saisies en cours','#FFF3DD','#7A4A00','2 évaluations soumises'],['4e A','Prêt à générer','#EAF0FD','#2448B5','Toutes les évaluations validées'],['5e A','Publié','#E2F4EA','#14663F','28 bulletins délivrés'],['6e B','Saisies en cours','#FFF3DD','#7A4A00','64 % des notes saisies']].map(([c,l,bg,fg,sub])=>({cls:c,label:l,bg,fg,sub}));
+  V.exportPV=()=>this.toast('Procès-verbal de délibération exporté (PDF)');V.exportXls=()=>this.toast('Tableau des moyennes exporté (Excel)');
+  V.logs=st.log.map(l=>({...l,hasDiff:!!(l.before||l.after),icon:/Connexion/.test(l.action)?'fa-right-to-bracket':/Publication|rectificatif/.test(l.action)?'fa-file-export':/Validation/.test(l.action)?'fa-circle-check':/Déverrouillage|Dérogation/.test(l.action)?'fa-unlock':/rôle/.test(l.action)?'fa-user-shield':'fa-pen'}));
+  V.exportLog=()=>this.toast('Journal exporté (Excel)');
+  return V;}
+ secVals(st){
+  const V={};const q=st.q.trim().toLowerCase();
+  const list=ALL.filter(s=>(!q||(s.nom+' '+s.prenom+' '+s.mat).toLowerCase().includes(q))&&(st.fClass==='Toutes'||s.cls===st.fClass)&&(st.fStat==='Tous'||s.statut===st.fStat)&&(!st.fRed||s.redoublant)&&(!st.fInc||(s.missing.length&&!st.docsDone[s.id])));
+  V.q=st.q;V.onQ=e=>this.setState({q:e.target.value});V.count=list.length+' élève'+(list.length>1?'s':'');
+  V.fClasses=['Toutes','3e A','4e A','6e B'].map(c=>({v:c,label:c==='Toutes'?'Toutes les classes':c}));V.fClass=st.fClass;V.onFClass=e=>this.setState({fClass:e.target.value});
+  V.fStats=['Tous','Inscrit','Transféré'].map(c=>({v:c,label:c==='Tous'?'Tous les statuts':c}));V.fStat=st.fStat;V.onFStat=e=>this.setState({fStat:e.target.value});
+  const tg=(on)=>({bg:on?'var(--acc-soft)':'#fff',fg:on?'var(--acc)':'#3B3747',bd:on?'var(--acc)':'#E6E3EE'});
+  V.fRed=tg(st.fRed);V.fInc=tg(st.fInc);V.togRed=()=>this.setState(s=>({fRed:!s.fRed}));V.togInc=()=>this.setState(s=>({fInc:!s.fInc}));
+  const nSel=Object.values(st.sel).filter(Boolean).length;V.nSel=nSel;V.hasSel=nSel>0;V.selLabel=nSel+' sélectionné'+(nSel>1?'s':'');V.clearSel=()=>this.setState({sel:{}});
+  V.allSel=list.length>0&&list.every(s=>st.sel[s.id]);V.selAllBg=V.allSel?'var(--acc)':'#fff';V.selAllBd=V.allSel?'var(--acc)':'#BDB8CC';V.selAllIc=V.allSel?'fa-check':'';
+  V.toggleAll=()=>this.setState(s=>{const o={...s.sel};const all=list.every(x=>s.sel[x.id]);list.forEach(x=>o[x.id]=!all);return {sel:o};});
+  V.bulkClass=()=>this.openSheet({title:'Changer de classe',text:nSel+' élève(s) seront affectés à la 4e A. L’affectation est refusée si la capacité est atteinte (RG7).',lines:[['Classe cible','4e A · 31 / 40']],confirm:'Changer de classe',onOk:()=>{this.addLog('Changement de classe',nSel+' élève(s)','—','4e A');this.setState({sel:{}});this.toast('Classe mise à jour pour '+nSel+' élève(s)');}});
+  V.bulkCert=()=>{this.toast(nSel+' certificat(s) de scolarité générés (PDF)');};
+  V.exportList=()=>this.toast('Liste exportée en Excel — colonnes visibles uniquement');V.exportPdf=()=>this.toast('Liste exportée en PDF');V.importXls=()=>this.toast('Import Excel : rapport d’erreurs à valider avant enregistrement');
+  const sp=s=>s.statut==='Inscrit'?['#E2F4EA','#14663F']:['#FFF3DD','#7A4A00'];
+  V.students=list.map(s=>{const on=!!st.sel[s.id];const p=sp(s);const inc=s.missing.length&&!st.docsDone[s.id];return {name:s.nomU+' '+s.prenom,init:s.init,avBg:s.avBg,avFg:s.avFg,mat:s.mat,cls:s.cls,sexe:s.sexe,statut:s.statut,sBg:p[0],sFg:p[1],inc:!!inc,dossier:inc?'Incomplet':'Complet',dFg:inc?'#A3214F':'#14663F',red:s.redoublant,cBg:on?'var(--acc)':'#fff',cBd:on?'var(--acc)':'#BDB8CC',cIc:on?'fa-check':'',rowBg:on?'var(--acc-soft)':'#fff',
+   toggle:()=>this.setState(x=>({sel:{...x.sel,[s.id]:!x.sel[s.id]}})),open:()=>{this.setState({ficheId:s.id,ficheTab:'id'});this.go('s_fiche');}};});
+  V.noStudents=!list.length;
+  V.incList=ALL.filter(s=>s.missing.length&&!st.docsDone[s.id]).map(s=>({name:s.nomU+' '+s.prenom,init:s.init,avBg:s.avBg,avFg:s.avFg,cls:s.cls,mat:s.mat,missing:s.missing.map(m=>({m})),open:()=>{this.setState({ficheId:s.id,ficheTab:'docs'});this.go('s_fiche');}}));
+  V.incCount=V.incList.length;V.incEmpty=!V.incList.length;
+  // fiche
+  const s=ALL.find(x=>x.id===st.ficheId)||AMI;const p=sp(s);const isA=s.id===AMI.id;
+  V.f={name:s.prenom+' '+s.nom,init:s.init,avBg:s.avBg,avFg:s.avFg,mat:s.mat,cls:s.cls,statut:s.statut,sBg:p[0],sFg:p[1]};
+  V.fTabs=[['id','Identité'],['tut','Tuteurs'],['sco','Scolarité'],['notes','Notes'],['bul','Bulletins'],['docs','Documents'],['log','Journal']].map(([k,l])=>{const on=st.ficheTab===k;return {label:l,fg:on?'var(--acc)':'#5E5A6B',bd:on?'var(--acc)':'transparent',fw:on?700:500,pick:()=>this.setState({ficheTab:k})};});
+  V.ft={[st.ficheTab]:true};
+  V.fId=[['Nom',s.nom],['Prénoms',s.prenom],['Sexe',s.sexe==='F'?'Féminin':'Masculin'],['Date de naissance',s.dob],['Lieu de naissance','Conakry'],['Nationalité','Guinéenne'],['N° acte de naissance','CKY-'+s.mat.slice(0,4)+'-'+String(4000+s.i*13)],['Matricule',s.mat]].map(([a,b])=>({k:a,v:b}));
+  V.fTut=isA?[{name:'Fatoumata Diallo',lien:'Mère · tutrice principale',tel:'+224 622 14 87 30',prof:'Commerçante',addr:'Kipé, Ratoma, Conakry'},{name:'Mamadou Diallo',lien:'Père',tel:'+224 664 02 55 19',prof:'Ingénieur',addr:'Kipé, Ratoma, Conakry'}]:[{name:(s.sexe==='F'?'Mme ':'M. ')+s.nom,lien:'Tuteur principal',tel:'+224 62'+(s.i%10)+' '+(10+s.i)+' 4'+(s.i%9)+' 0'+(s.i%7),prof:'Fonctionnaire',addr:'Matoto, Conakry'}];
+  V.fSco=[{y:'2026-2027',c:s.cls,e:s.statut==='Transféré'?'Transféré le 04/11/2026':'Validée',red:s.redoublant?'Redoublant':''},{y:'2025-2026',c:s.cls[0]==='3'?'4e A':'5e B',e:'Validée',red:''}];
+  const myRow=this.classData(st).rows.find(r=>r.s.id===s.id);
+  V.fNotes=SUBJ.map(sb=>{const v=myRow?myRow.av[sb.code]:s.av[sb.code];return {name:sb.name,icon:sb.icon,coef:sb.coef,v:fmt(v)};});
+  V.fBuls=isA?ARCH.map(b=>({label:b.label+' · '+b.year,mg:fmt(b.mg),cls:b.cls})):[];V.fNoBul=!isA;V.fHasBul=isA;
+  V.fDocs=[['Acte de naissance','acte'],['Bulletin de l’année précédente','bull'],['Certificat de transfert','transf'],['Photo d’identité','photo']].map(([l,k])=>{const miss=s.missing.includes(l==='Bulletin de l’année précédente'?'Bulletin de l’année précédente':l)&&!st.docsDone[s.id];return {label:l,ok:!miss,miss,status:miss?'Manquant':'Fourni',sBg:miss?'#FCE8EF':'#E2F4EA',sFg:miss?'#A3214F':'#14663F',icon:miss?'fa-file-circle-exclamation':'fa-file-circle-check',file:miss?'PDF ou image · 5 Mo max.':(k==='photo'?'photo_identite.jpg · 312 Ko':k+'_'+s.nom.toLowerCase()+'.pdf · 1,2 Mo'),
+   add:()=>{this.setState(x=>({docsDone:{...x.docsDone,[s.id]:true}}));this.addLog('Pièce ajoutée',l+' · '+s.nomU+' '+s.prenom,'Manquant','Fourni');this.toast('Pièce ajoutée au dossier');}};});
+  V.fLog=st.log.slice(0,2).concat([{who:'Alseny Bangoura',action:'Inscription validée',entity:s.cls+' · 2026-2027',at:'02/09/2026 à 09:30'}]);
+  V.fCert=()=>this.toast('Certificat de scolarité généré (PDF)');V.fEdit=()=>this.toast('Mode édition — prototype');
+  // inscription
+  const I=st.ins,E=st.insErr;V.ins=I;V.insE=E;V.insH=Object.fromEntries(Object.keys(E).map(k=>[k,!!E[k]]));
+  const setI=k=>e=>{const v=e.target.value;this.setState(x=>({ins:{...x.ins,[k]:v},insErr:{...x.insErr,[k]:null}}));};
+  V.insSet=Object.fromEntries(['nom','prenom','dob','lieu','nat','acte','tNom','tLien','tTel','tProf','tAddr','origine'].map(k=>[k,setI(k)]));
+  V.insSet.niveau=e=>{const v=e.target.value;this.setState(x=>({ins:{...x.ins,niveau:v,classe:CLASSES[v][0][0]},insErr:{...x.insErr,classe:null}}));};
+  V.insSet.classe=e=>{const v=e.target.value;this.setState(x=>({ins:{...x.ins,classe:v},insErr:{...x.insErr,classe:null}}));};
+  V.sexes=[['F','Féminin'],['M','Masculin']].map(([k,l])=>{const on=I.sexe===k;return {label:l,bg:on?'var(--acc-soft)':'#fff',fg:on?'var(--acc)':'#3B3747',bd:on?'var(--acc)':(E.sexe?'#C42F2F':'#E6E3EE'),pick:()=>this.setState(x=>({ins:{...x.ins,sexe:k},insErr:{...x.insErr,sexe:null}}))};});
+  V.liens=['Mère','Père','Tante','Oncle','Grand-parent','Autre tuteur légal'].map(v=>({v,label:v}));
+  V.niveaux=Object.keys(CLASSES).map(v=>({v,label:v}));V.classesOpt=CLASSES[I.niveau].map(([c,n,cap])=>({v:c,label:c+' · '+n+' / '+cap+(n>=cap?' — complète':'')}));
+  const ci=CLASSES[I.niveau].find(c=>c[0]===I.classe)||CLASSES[I.niveau][0];V.capLabel='Effectif '+ci[1]+' / '+ci[2];V.capW=(ci[1]/ci[2]*100)+'%';V.capBar=ci[1]>=ci[2]?'#C42F2F':'var(--acc)';
+  V.redBg=I.red?'var(--acc)':'#DDD9E6';V.redX=I.red?'20px':'2px';V.togRedI=()=>this.setState(x=>({ins:{...x.ins,red:!x.ins.red}}));
+  V.pieces=[['acte','Acte de naissance',true],['bull','Bulletin ou certificat de l’année précédente',true],['transf','Certificat de transfert',!!I.origine.trim()],['photo','Photo d’identité',true]].map(([k,l,req])=>{const on=I.docs[k];return {label:l,req:req?'Obligatoire':'Si autre établissement',status:on?'Fourni':'Manquant',sBg:on?'#E2F4EA':'#FCE8EF',sFg:on?'#14663F':'#A3214F',btn:on?'Retirer':'Joindre',icon:on?'fa-file-circle-check':'fa-paperclip',toggle:()=>this.setState(x=>({ins:{...x.ins,docs:{...x.ins.docs,[k]:!x.ins.docs[k]}}}))};});
+  V.steps=[[1,'Identité'],[2,'Tuteurs'],[3,'Scolarité']].map(([n,l])=>{const on=st.insStep===n,done=st.insStep>n||!!st.insDone;return {n,label:l,bg:done?'var(--acc)':on?'var(--acc-soft)':'#fff',fg:done?'#fff':on?'var(--acc)':'#77738A',bd:done||on?'var(--acc)':'#DDD9E6',lfg:on?'#1B1726':'#77738A',ic:done?'fa-check':'',num:done?'':String(n)};});
+  V.is={s1:st.insStep===1&&!st.insDone,s2:st.insStep===2&&!st.insDone,s3:st.insStep===3&&!st.insDone,done:!!st.insDone,form:!st.insDone,notFirst:st.insStep>1,notLast:st.insStep<3,last:st.insStep===3};
+  const validate=n=>{const e={};if(n===1){if(!I.nom.trim())e.nom='Le nom est obligatoire.';if(!I.prenom.trim())e.prenom='Les prénoms sont obligatoires.';if(!I.sexe)e.sexe='Indiquez le sexe.';if(!I.dob)e.dob='La date de naissance est obligatoire.';if(!I.lieu.trim())e.lieu='Le lieu de naissance est obligatoire.';}
+   if(n===2){if(!I.tNom.trim())e.tNom='Au moins un tuteur est requis.';if(!/^[+\d][\d ]{8,}$/.test(I.tTel.trim()))e.tTel='Numéro invalide, ex. +224 622 00 00 00.';}
+   if(n===3){if(ci[1]>=ci[2])e.classe='Classe complète ('+ci[1]+' / '+ci[2]+'). Seule la direction peut forcer l’affectation, avec motif (RG7).';}return e;};
+  V.insNext=()=>{const e=validate(st.insStep);if(Object.keys(e).length)return this.setState({insErr:e});this.setState(x=>({insStep:x.insStep+1,insErr:{}}));const el=document.getElementById('ee-scroll');if(el)el.scrollTop=0;};
+  V.insPrev=()=>this.setState(x=>({insStep:Math.max(1,x.insStep-1),insErr:{}}));
+  const missing=V.pieces.filter((p,i)=>!I.docs[['acte','bull','transf','photo'][i]]&&(i!==2||I.origine.trim())).map(p=>p.label);
+  V.insSubmit=()=>{const e=validate(3);if(Object.keys(e).length)return this.setState({insErr:e});const mat='2026-'+String(1287+Math.floor(Math.random()*90)).padStart(5,'0');this.setState({insDone:{mat,name:I.prenom+' '+I.nom.toUpperCase(),cls:I.classe,missing:missing.map(m=>({m})),hasMissing:missing.length>0,complete:!missing.length}});this.addLog('Dossier d’inscription soumis',I.prenom+' '+I.nom.toUpperCase()+' · '+I.classe,'Brouillon','Soumis');};
+  V.insDraft=()=>this.toast('Brouillon enregistré');
+  V.insDone=st.insDone||{};V.insReset=()=>this.setState({insStep:1,ins:JSON.parse(JSON.stringify(INS0)),insErr:{},insDone:null});
+  V.insPrint=()=>this.toast('Fiche d’inscription imprimable générée (PDF)');
+  return V;}
+ adminVals(st){
+  const V={};
+  V.periodsA=[['1er trimestre','01/09 → 15/12/2026','Saisie ouverte','#E2F4EA','#14663F'],['2e trimestre','05/01 → 27/03/2027','À venir','#F1F0F5','#4E4A5C'],['3e trimestre','06/04 → 26/06/2027','À venir','#F1F0F5','#4E4A5C']].map(([l,d,s,bg,fg])=>({l,d,s,bg,fg}));
+  V.years=[['2026-2027','Active','#E2F4EA','#14663F','Trimestres · 18 classes'],['2027-2028','En préparation','#EAF0FD','#2448B5','Non créée'],['2025-2026','Clôturée','#E8E6EF','#2F2B3A','Lecture seule']].map(([y,s,bg,fg,sub])=>({y,s,bg,fg,sub}));
+  V.adminStats=[['Niveaux','7','fa-layer-group'],['Classes','18','fa-door-open'],['Matières','12','fa-book'],['Comptes actifs','214','fa-users']].map(([l,v,i])=>({l,v,i}));
+  V.dupYear=()=>this.openSheet({title:'Dupliquer 2026-2027 vers 2027-2028 ?',text:'Niveaux, matières, coefficients, classes et affectations seront repris sur la nouvelle année, à corriger ensuite au cas par cas.',lines:[['Classes','18'],['Affectations','146']],confirm:'Dupliquer',onOk:()=>{this.addLog('Duplication d’année','2026-2027 → 2027-2028','','En préparation');this.toast('Année 2027-2028 créée en préparation');}});
+  V.levels=['6e','5e','4e','3e'].map(l=>({l}));
+  V.coefRows=SUBJ.map(sb=>({name:sb.name,code:sb.code,fam:sb.fam,icon:sb.icon,cells:st.coefs[sb.code].map((c,j)=>({v:String(c),onChange:e=>{const v=e.target.value.replace(/\D/g,'').slice(0,1);this.setState(s=>{const a=s.coefs[sb.code].slice();a[j]=v===''?'':Number(v);return {coefs:{...s.coefs,[sb.code]:a}};});},onBlur:()=>this.addLog('Coefficient modifié',sb.name+' · '+['6e','5e','4e','3e'][j],String(COEF0[sb.code][j]),String(st.coefs[sb.code][j]))}))}));
+  V.usersList=st.users.map((u,i)=>({...u,init:u.name.split(' ').map(x=>x[0]).join(''),rolesL:u.roles.map(r=>({r})),tBg:u.active?'var(--acc)':'#DDD9E6',tX:u.active?'20px':'2px',state:u.active?'Actif':'Désactivé',sFg:u.active?'#14663F':'#77738A',
+   toggle:()=>{this.setState(s=>({users:s.users.map((x,j)=>j===i?{...x,active:!x.active}:x)}));this.addLog(u.active?'Compte désactivé':'Compte activé',u.email,u.active?'Actif':'Désactivé',u.active?'Désactivé':'Actif');}}));
+  V.addUser=()=>this.toast('Création de compte : mot de passe à changer à la première connexion');
+  // profile
+  const pw=st.pw,pe=st.pwErr;V.pw=pw;V.pwE={cur:pe.cur||'',n1:pe.n1||'',n2:pe.n2||''};V.pwH={cur:!!pe.cur,n1:!!pe.n1,n2:!!pe.n2};
+  const setP=k=>e=>{const v=e.target.value;this.setState(s=>({pw:{...s.pw,[k]:v},pwErr:{...s.pwErr,[k]:null}}));};V.pwSet={cur:setP('cur'),n1:setP('n1'),n2:setP('n2')};
+  V.pwLen=pw.n1.length+' / 10 caractères minimum';V.pwLenFg=pw.n1.length>=10?'#14663F':'#77738A';
+  V.pwSave=()=>{const e={};if(!pw.cur)e.cur='Saisissez votre mot de passe actuel.';if(pw.n1.length<10)e.n1='10 caractères minimum.';if(pw.n1!==pw.n2)e.n2='Les deux mots de passe ne correspondent pas.';if(Object.keys(e).length)return this.setState({pwErr:e});this.setState({pw:{cur:'',n1:'',n2:''},pwErr:{}});this.toast('Mot de passe modifié');};
+  V.switchProfile=()=>this.setState({role:null,authStep:'login',sheet:null});
+  return V;}
+}
+</script>
+</body>
+</html>
